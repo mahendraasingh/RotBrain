@@ -1,6 +1,7 @@
 /**
  * RotBrain LiveSessionIndicator
- * Shows active session status, live timer, and simulation controls.
+ * Shows active session status when Instagram Reels or YouTube Shorts are actively detected.
+ * Returns null when idle (removes legacy Background Activity Monitor card completely).
  */
 
 import React, { useEffect, useState } from 'react';
@@ -12,14 +13,7 @@ import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 export const LiveSessionIndicator: React.FC = () => {
-  const {
-    activeSession,
-    startSession,
-    endActiveSession,
-    recordVideoEvent,
-    preferences,
-  } = useRotBrainStore();
-
+  const { activeSession, endActiveSession } = useRotBrainStore();
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
   useEffect(() => {
@@ -37,35 +31,9 @@ export const LiveSessionIndicator: React.FC = () => {
     return () => clearInterval(interval);
   }, [activeSession]);
 
+  // Remove background activity monitor completely when idle
   if (!activeSession) {
-    return (
-      <View style={styles.idleContainer}>
-        <View style={styles.idleRow}>
-          <View style={styles.idleDot} />
-          <Text style={styles.idleText}>Background Activity Monitor: Standby</Text>
-        </View>
-
-        <View style={styles.startRow}>
-          {preferences.instagramTrackingEnabled && (
-            <TouchableOpacity
-              style={[styles.startButton, { borderColor: colors.platforms.instagram }]}
-              onPress={() => startSession('instagram')}
-            >
-              <Text style={styles.startButtonText}>+ Sim Instagram Session</Text>
-            </TouchableOpacity>
-          )}
-
-          {preferences.youtubeTrackingEnabled && (
-            <TouchableOpacity
-              style={[styles.startButton, { borderColor: colors.platforms.youtube }]}
-              onPress={() => startSession('youtube')}
-            >
-              <Text style={styles.startButtonText}>+ Sim YouTube Session</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    );
+    return null;
   }
 
   const isInstagram = activeSession.platform === 'instagram';
@@ -79,7 +47,7 @@ export const LiveSessionIndicator: React.FC = () => {
         <View style={styles.liveTag}>
           <View style={[styles.pulsingDot, { backgroundColor: platformColor }]} />
           <Text style={[styles.liveText, { color: platformColor }]}>
-            TRACKING ACTIVE — {isInstagram ? 'INSTAGRAM REELS' : 'YOUTUBE SHORTS'}
+            ACTIVE FEED — {isInstagram ? 'INSTAGRAM REELS' : 'YOUTUBE SHORTS'}
           </Text>
         </View>
 
@@ -90,24 +58,14 @@ export const LiveSessionIndicator: React.FC = () => {
 
       <View style={styles.statsRow}>
         <Text style={styles.statsText}>
-          Session Count:{' '}
+          Videos Detected:{' '}
           <Text style={{ fontWeight: '800', color: '#F8FAFC' }}>
             {activeSession.confirmedVideoCount}
-          </Text>{' '}
-          videos
+          </Text>
         </Text>
-      </View>
 
-      <View style={styles.actionRow}>
-        <TouchableOpacity
-          style={styles.simulateVideoBtn}
-          onPress={() => recordVideoEvent(activeSession.platform, true)}
-        >
-          <Text style={styles.simulateVideoText}>⚡ Record Confirmed Reel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.endBtn} onPress={endActiveSession}>
-          <Text style={styles.endBtnText}>End Session</Text>
+        <TouchableOpacity style={styles.endBtn} onPress={endActiveSession} activeOpacity={0.8}>
+          <Text style={styles.endBtnText}>Close Feed Session</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -115,50 +73,6 @@ export const LiveSessionIndicator: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  idleContainer: {
-    backgroundColor: '#13151F',
-    borderRadius: radii.lg,
-    padding: spacing.md,
-    marginVertical: spacing.sm,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  idleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  idleDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#64748B',
-    marginRight: spacing.sm,
-  },
-  idleText: {
-    ...typography.caption,
-    color: '#94A3B8',
-  },
-  startRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.xs,
-  },
-  startButton: {
-    flex: 1,
-    paddingVertical: spacing.xs,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radii.sm,
-    borderWidth: 1,
-    alignItems: 'center',
-    marginHorizontal: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-  },
-  startButtonText: {
-    ...typography.caption,
-    color: '#CBD5E1',
-    fontWeight: '600',
-  },
   activeContainer: {
     backgroundColor: '#13151F',
     borderRadius: radii.lg,
@@ -191,40 +105,25 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: '#F8FAFC',
     fontWeight: '700',
+    fontFamily: 'monospace',
   },
   statsRow: {
-    marginBottom: spacing.sm,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: spacing.xs,
   },
   statsText: {
     ...typography.bodySmall,
     color: '#94A3B8',
   },
-  actionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  simulateVideoBtn: {
-    flex: 2,
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: radii.sm,
-    paddingVertical: spacing.xs,
-    alignItems: 'center',
-    marginRight: spacing.xs,
-  },
-  simulateVideoText: {
-    ...typography.caption,
-    color: colors.primaryLight,
-    fontWeight: '700',
-  },
   endBtn: {
-    flex: 1,
     backgroundColor: 'rgba(239, 68, 68, 0.15)',
     borderWidth: 1,
     borderColor: colors.danger,
     borderRadius: radii.sm,
-    paddingVertical: spacing.xs,
+    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
     alignItems: 'center',
   },
   endBtnText: {

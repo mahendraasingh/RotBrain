@@ -63,16 +63,13 @@ export const MainDashboardScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Top App Header with Mandatory 24-Hour Clock */}
+      {/* Top App Header with Strict 24-Hour Timer */}
       <View style={styles.topHeader}>
         <View>
           <Text style={styles.appTitle}>RotBrain</Text>
-          <Text style={styles.dateSubtitle}>
-            {DateTimeFormatter.formatLocalDate()}
-          </Text>
         </View>
 
-        {/* 24-Hour Clock Pill */}
+        {/* 24-Hour Clock */}
         <View style={styles.clockPill}>
           <Text style={styles.clockDot}>●</Text>
           <Text style={styles.clockText}>{currentTime24}</Text>
@@ -207,10 +204,6 @@ const styles = StyleSheet.create({
     ...typography.h2,
     color: '#F8FAFC',
     letterSpacing: -0.5,
-  },
-  dateSubtitle: {
-    ...typography.caption,
-    color: '#94A3B8',
   },
   clockPill: {
     flexDirection: 'row',
