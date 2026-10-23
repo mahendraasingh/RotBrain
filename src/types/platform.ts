@@ -8,6 +8,7 @@ export type DashboardFilter = 'all' | 'instagram' | 'youtube';
 
 export type PermissionStatus =
   | 'not_requested'
+  | 'requested'
   | 'granted'
   | 'denied'
   | 'revoked'
