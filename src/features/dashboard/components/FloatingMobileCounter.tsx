@@ -1,35 +1,59 @@
 /**
  * RotBrain FloatingMobileCounter
  *
- * Compact mobile phone icon positioned at the bottom right.
- * Automatically activates and counts whenever Instagram Reels or YouTube Shorts
- * start being viewed, displaying platform-specific indicators and live tally.
+ * Floating brain mascot widget positioned at the bottom right.
+ * Features:
+ * - Circular brain mascot bubble matching the user's reference photo
+ * - Dynamic brain expression changing by count milestones (<30 fresh, 30+ tired, 60+ very tired, 90+ exhausted)
+ * - Overlapping circular cream count badge at the bottom center showing live reel/short count
+ * - Real-time bounce animation and floating "+1" pop badge when videos are viewed
+ * - Tap to expand detailed session telemetry drawer
  */
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Platform,
+  Easing,
 } from 'react-native';
 import { useRotBrainStore } from '../../../store/useRotBrainStore';
+import { BrainState } from '../../../types/brain';
 import { colors } from '../../../theme/colors';
-import { typography } from '../../../theme/typography';
 import { radii, spacing } from '../../../theme/spacing';
+
+import brainFresh from '../../../../assets/images/freshBrain.png';
+import brainTired from '../../../../assets/images/brain_tired.jpg';
+import brainVeryTired from '../../../../assets/images/brain_very_tired.jpg';
+import brainExhausted from '../../../../assets/images/brain_exhausted.jpg';
+
+const BRAIN_IMAGES: Record<BrainState, any> = {
+  fresh: brainFresh,
+  tired: brainTired,
+  very_tired: brainVeryTired,
+  exhausted: brainExhausted,
+};
+
+const BRAIN_STAGE_NAMES: Record<BrainState, string> = {
+  fresh: 'Fresh Brain (<30)',
+  tired: 'Tired Brain (30+)',
+  very_tired: 'Very Tired (60+)',
+  exhausted: 'Exhausted (90+)',
+};
 
 export const FloatingMobileCounter: React.FC = () => {
   const {
     activeSession,
     todaySummary,
-    preferences,
   } = useRotBrainStore();
 
   const [expanded, setExpanded] = useState<boolean>(false);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const countAnim = useRef(new Animated.Value(1)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
   const badgeAnim = useRef(new Animated.Value(0)).current;
 
   const isInstagramActive = activeSession?.platform === 'instagram';
@@ -44,13 +68,25 @@ export const FloatingMobileCounter: React.FC = () => {
     ? todaySummary.youtubeConfirmedCount
     : todaySummary.instagramConfirmedCount + todaySummary.youtubeConfirmedCount;
 
+  // Compute dynamic brain state based on reel count milestones
+  const getBrainState = (count: number): BrainState => {
+    if (count >= 90) return 'exhausted';
+    if (count >= 60) return 'very_tired';
+    if (count >= 30) return 'tired';
+    return 'fresh';
+  };
+
+  const currentBrainState = getBrainState(currentCount);
+  const rawImage = BRAIN_IMAGES[currentBrainState] || BRAIN_IMAGES.fresh;
+  const mascotSource = typeof rawImage === 'string' ? { uri: rawImage } : rawImage;
+
+  // Pop animation when count increases
   useEffect(() => {
     if (currentCount > prevCountRef.current) {
-      // Trigger count pop animation
       Animated.sequence([
         Animated.parallel([
           Animated.timing(countAnim, {
-            toValue: 1.35,
+            toValue: 1.4,
             duration: 150,
             useNativeDriver: true,
           }),
@@ -68,7 +104,7 @@ export const FloatingMobileCounter: React.FC = () => {
           }),
           Animated.timing(badgeAnim, {
             toValue: 0,
-            duration: 600,
+            duration: 650,
             useNativeDriver: true,
           }),
         ]),
@@ -77,7 +113,29 @@ export const FloatingMobileCounter: React.FC = () => {
     prevCountRef.current = currentCount;
   }, [currentCount, countAnim, badgeAnim]);
 
-  // Continuous gentle glow pulse when actively watching
+  // Gentle floating breathing animation
+  useEffect(() => {
+    const floatLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -4,
+          duration: 1800,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 1800,
+          easing: Easing.inOut(Easing.sin),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    floatLoop.start();
+    return () => floatLoop.stop();
+  }, [floatAnim]);
+
+  // Continuous glow pulse when feed is actively detected
   useEffect(() => {
     if (isAnyActive) {
       const loop = Animated.loop(
@@ -105,7 +163,7 @@ export const FloatingMobileCounter: React.FC = () => {
     ? colors.platforms.instagram
     : isYoutubeActive
     ? colors.platforms.youtube
-    : colors.primary;
+    : '#FF6B00';
 
   return (
     <View style={styles.floatingWrapper} pointerEvents="box-none">
@@ -113,45 +171,52 @@ export const FloatingMobileCounter: React.FC = () => {
       {expanded && (
         <View style={styles.flyoutCard}>
           <View style={styles.flyoutHeader}>
-            <Text style={styles.flyoutTitle}>Live Reel/Short Tracker</Text>
-            <TouchableOpacity onPress={() => setExpanded(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <View style={styles.flyoutTitleRow}>
+              <View
+                style={[
+                  styles.flyoutDot,
+                  { backgroundColor: isAnyActive ? activeColor : '#64748B' },
+                ]}
+              />
+              <Text style={styles.flyoutTitle}>FEED TELEMETRY</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => setExpanded(false)}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.flyoutStatusRow}>
-            <View
-              style={[
-                styles.flyoutDot,
-                { backgroundColor: isAnyActive ? activeColor : '#64748B' },
-              ]}
-            />
-            <Text style={styles.flyoutStatusText}>
-              {isInstagramActive
-                ? 'Instagram Reels Active'
-                : isYoutubeActive
-                ? 'YouTube Shorts Active'
-                : 'Standby • Auto-detects on Feed View'}
-            </Text>
-          </View>
+          <Text style={styles.stageIndicatorText}>
+            Stage: {BRAIN_STAGE_NAMES[currentBrainState]}
+          </Text>
+
+          <Text style={styles.flyoutStatusText}>
+            {isInstagramActive
+              ? 'Instagram Reels • Active Feed'
+              : isYoutubeActive
+              ? 'YouTube Shorts • Active Feed'
+              : 'Standby • Auto-counts on Reel/Short view'}
+          </Text>
 
           <View style={styles.flyoutDivider} />
 
           <View style={styles.breakdownRow}>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>📷 Reels</Text>
+              <Text style={styles.miniLabel}>📷 REELS</Text>
               <Text style={[styles.miniVal, { color: colors.platforms.instagram }]}>
                 {todaySummary.instagramConfirmedCount}
               </Text>
             </View>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>▶️ Shorts</Text>
+              <Text style={styles.miniLabel}>▶️ SHORTS</Text>
               <Text style={[styles.miniVal, { color: colors.platforms.youtube }]}>
                 {todaySummary.youtubeConfirmedCount}
               </Text>
             </View>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>Total</Text>
+              <Text style={styles.miniLabel}>TOTAL</Text>
               <Text style={[styles.miniVal, { color: '#F8FAFC' }]}>
                 {todaySummary.instagramConfirmedCount + todaySummary.youtubeConfirmedCount}
               </Text>
@@ -171,7 +236,7 @@ export const FloatingMobileCounter: React.FC = () => {
               {
                 translateY: badgeAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -28],
+                  outputRange: [0, -32],
                 }),
               },
             ],
@@ -181,7 +246,7 @@ export const FloatingMobileCounter: React.FC = () => {
         <Text style={styles.incrementText}>+1</Text>
       </Animated.View>
 
-      {/* Miniature Mobile Phone Chassis Icon */}
+      {/* Circular Brain Mascot Floating Widget with Overlapping Count Badge */}
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => setExpanded(!expanded)}
@@ -189,61 +254,52 @@ export const FloatingMobileCounter: React.FC = () => {
       >
         <Animated.View
           style={[
-            styles.phoneChassis,
+            styles.mascotWidgetContainer,
             {
-              borderColor: isAnyActive ? activeColor : 'rgba(255, 255, 255, 0.18)',
-              shadowColor: activeColor,
-              shadowOpacity: isAnyActive ? 0.6 : 0.2,
-              transform: [{ scale: pulseAnim }],
+              transform: [
+                { translateY: floatAnim },
+                { scale: pulseAnim },
+              ],
             },
           ]}
         >
-          {/* Top Speaker / Notch */}
-          <View style={styles.phoneSpeaker} />
-
-          {/* Inner Phone Screen */}
+          {/* Circular Brain Mascot Bubble */}
           <View
             style={[
-              styles.phoneScreen,
+              styles.brainBubbleCircle,
               {
-                backgroundColor: isAnyActive
-                  ? isInstagramActive
-                    ? 'rgba(225, 48, 108, 0.15)'
-                    : 'rgba(255, 0, 0, 0.15)'
-                  : '#0E1017',
+                borderColor: isAnyActive ? activeColor : '#5C381E',
+                shadowColor: isAnyActive ? activeColor : '#000000',
               },
             ]}
           >
-            {/* Platform Icon on Phone Screen */}
-            <Text style={styles.screenPlatformIcon}>
-              {isInstagramActive ? '📷' : isYoutubeActive ? '▶️' : '📱'}
-            </Text>
-
-            {/* Live Count on Screen */}
-            <Animated.Text
-              style={[
-                styles.screenCountText,
-                {
-                  color: isAnyActive ? '#FFFFFF' : '#94A3B8',
-                  transform: [{ scale: countAnim }],
-                },
-              ]}
-            >
-              {currentCount}
-            </Animated.Text>
+            <Image
+              source={mascotSource}
+              style={styles.brainBubbleImage}
+              resizeMode="cover"
+            />
           </View>
 
-          {/* Bottom Home Indicator */}
-          <View
+          {/* Overlapping Circular Cream Count Badge at Bottom Center */}
+          <Animated.View
             style={[
-              styles.phoneHomeBar,
-              { backgroundColor: isAnyActive ? activeColor : '#64748B' },
+              styles.countBadgeCircle,
+              {
+                transform: [{ scale: countAnim }],
+              },
             ]}
-          />
+          >
+            <Text style={styles.countBadgeText}>{currentCount}</Text>
+          </Animated.View>
 
-          {/* Notification Alert Dot when active */}
+          {/* Active Platform Dot Indicator */}
           {isAnyActive && (
-            <View style={[styles.cornerDot, { backgroundColor: activeColor }]} />
+            <View
+              style={[
+                styles.platformDotRing,
+                { backgroundColor: activeColor },
+              ]}
+            />
           )}
         </Animated.View>
       </TouchableOpacity>
@@ -254,7 +310,7 @@ export const FloatingMobileCounter: React.FC = () => {
 const styles = StyleSheet.create({
   floatingWrapper: {
     position: 'absolute',
-    bottom: 84, // Sits comfortably above bottom navigation bar
+    bottom: 84, // Sits above bottom navigation tabs
     right: 18,
     alignItems: 'flex-end',
     zIndex: 9999,
@@ -263,87 +319,98 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  phoneChassis: {
-    width: 44,
-    height: 72,
-    backgroundColor: '#13151F',
-    borderRadius: 14,
-    borderWidth: 2,
-    padding: 3,
+  mascotWidgetContainer: {
+    width: 62,
+    height: 68,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 8,
+    justifyContent: 'flex-start',
+    position: 'relative',
   },
-  phoneSpeaker: {
-    width: 14,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: '#475569',
-    marginTop: 1,
-  },
-  phoneScreen: {
-    width: '100%',
-    flex: 1,
-    borderRadius: 8,
-    marginVertical: 3,
+  brainBubbleCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#351B0A',
+    borderWidth: 2.5,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 8,
   },
-  screenPlatformIcon: {
-    fontSize: 12,
-    marginBottom: 1,
+  brainBubbleImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
   },
-  screenCountText: {
-    fontSize: 12,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-  },
-  phoneHomeBar: {
-    width: 16,
-    height: 2.5,
-    borderRadius: 2,
-    marginBottom: 1,
-  },
-  cornerDot: {
+  countBadgeCircle: {
     position: 'absolute',
-    top: -3,
-    right: -3,
+    bottom: 0,
+    alignSelf: 'center',
+    minWidth: 24,
+    height: 24,
+    borderRadius: 12,
+    paddingHorizontal: 5,
+    backgroundColor: '#FFF1E0',
+    borderWidth: 1.5,
+    borderColor: '#4A230D',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 3,
+    elevation: 9,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#3B1806',
+    fontFamily: 'monospace',
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  platformDotRing: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
     width: 10,
     height: 10,
     borderRadius: 5,
     borderWidth: 1.5,
-    borderColor: '#0B0C10',
+    borderColor: '#0D0E15',
+    elevation: 10,
   },
   incrementBadge: {
     position: 'absolute',
-    top: 0,
-    right: 28,
-    paddingHorizontal: 6,
+    top: -12,
+    right: 12,
+    paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: radii.full,
-    zIndex: 10000,
+    elevation: 10,
   },
   incrementText: {
     color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '800',
+    fontSize: 10,
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   flyoutCard: {
-    backgroundColor: '#161926',
-    borderRadius: radii.lg,
+    backgroundColor: '#12141D',
+    borderRadius: radii.xl,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
-    width: 220,
+    width: 236,
     marginBottom: spacing.sm,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
+    elevation: 12,
   },
   flyoutHeader: {
     flexDirection: 'row',
@@ -351,52 +418,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xs,
   },
-  flyoutTitle: {
-    ...typography.caption,
-    color: '#F8FAFC',
-    fontWeight: '700',
-  },
-  closeText: {
-    color: '#64748B',
-    fontSize: 12,
-    paddingHorizontal: 4,
-  },
-  flyoutStatusRow: {
+  flyoutTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 4,
+  },
+  flyoutTitle: {
+    fontSize: 10,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    fontFamily: 'monospace',
+  },
+  closeText: {
+    color: '#71717A',
+    fontSize: 13,
+    paddingHorizontal: 4,
   },
   flyoutDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    marginRight: spacing.xs,
+    marginRight: 6,
+  },
+  stageIndicatorText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FB923C',
+    marginVertical: 2,
   },
   flyoutStatusText: {
-    ...typography.caption,
     fontSize: 10,
     color: '#94A3B8',
+    lineHeight: 14,
+    marginVertical: 2,
   },
   flyoutDivider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     marginVertical: spacing.xs,
   },
   breakdownRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 2,
+    marginTop: 4,
   },
   miniCol: {
     alignItems: 'center',
   },
   miniLabel: {
-    fontSize: 9,
-    color: '#64748B',
+    fontSize: 8,
+    color: '#71717A',
+    fontWeight: '800',
+    fontFamily: 'monospace',
     marginBottom: 2,
   },
   miniVal: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
 });
