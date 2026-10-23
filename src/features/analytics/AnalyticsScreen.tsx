@@ -36,6 +36,31 @@ export const AnalyticsScreen: React.FC = () => {
     0
   );
 
+  // Compute real hourly distribution (strictly 0 if no sessions exist)
+  const hourlyCounts = new Array(24).fill(0);
+  recentSessions.forEach((session) => {
+    const d = new Date(session.startedAt);
+    const hour = d.getHours();
+    if (hour >= 0 && hour < 24) {
+      hourlyCounts[hour] += session.confirmedVideoCount || 1;
+    }
+  });
+
+  // Calculate genuine peak window (no fake placeholder)
+  let peakWindow = '—';
+  if (totalVideos > 0 && recentSessions.length > 0) {
+    let maxHour = 0;
+    let maxHourCount = 0;
+    for (let h = 0; h < 24; h++) {
+      if (hourlyCounts[h] > maxHourCount) {
+        maxHourCount = hourlyCounts[h];
+        maxHour = h;
+      }
+    }
+    const endH = (maxHour + 1) % 24;
+    peakWindow = `${String(maxHour).padStart(2, '0')}:00 – ${String(endH).padStart(2, '0')}:00`;
+  }
+
   return (
     <View style={styles.container}>
       {/* Top Header */}
@@ -103,13 +128,13 @@ export const AnalyticsScreen: React.FC = () => {
           <View style={styles.avgRow}>
             <Text style={styles.avgLabel}>Peak Activity Window</Text>
             <Text style={[styles.avgValue, { color: colors.primaryLight }]}>
-              18:00 – 21:00
+              {peakWindow}
             </Text>
           </View>
         </View>
 
         {/* 24-Hour Timeline Distribution Chart */}
-        <Activity24HourChart />
+        <Activity24HourChart hourlyCounts={hourlyCounts} />
 
         {/* Platform Comparison */}
         <View style={styles.comparisonCard}>

@@ -2,7 +2,7 @@
  * RotBrain Activity24HourChart
  *
  * Visual distribution of short-video scrolling across 24 hours (00:00 to 23:00).
- * Strictly adheres to 24-hour time labels with zero AM/PM.
+ * Strictly adheres to 24-hour time labels with zero AM/PM and zero fake data.
  */
 
 import React from 'react';
@@ -21,13 +21,14 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
 }) => {
   const labels24 = DateTimeFormatter.get24HourLabels();
 
-  // If hourly counts are not yet fully populated, supply realistic baseline distribution
+  // Initialize strictly with real data or 0s (no fake data)
   const counts =
     hourlyCounts && hourlyCounts.length === 24
       ? hourlyCounts
-      : [0, 0, 0, 0, 0, 0, 2, 5, 8, 4, 3, 7, 12, 14, 9, 6, 8, 15, 22, 18, 11, 4, 1, 0];
+      : new Array(24).fill(0);
 
   const maxVal = Math.max(1, ...counts);
+  const totalInChart = counts.reduce((acc, v) => acc + v, 0);
 
   return (
     <View style={styles.container}>
@@ -36,6 +37,12 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
         <Text style={styles.subtitle}>Hour-by-hour timeline</Text>
       </View>
 
+      {totalInChart === 0 && (
+        <View style={styles.noDataBanner}>
+          <Text style={styles.noDataText}>0 videos recorded across all 24 hours</Text>
+        </View>
+      )}
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -43,7 +50,7 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
       >
         {labels24.map((hourLabel, index) => {
           const val = counts[index];
-          const heightPercent = Math.min(100, Math.round((val / maxVal) * 100));
+          const heightPercent = val > 0 ? Math.min(100, Math.round((val / maxVal) * 100)) : 0;
 
           return (
             <View key={hourLabel} style={styles.barColumn}>
@@ -56,7 +63,7 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
                   style={[
                     styles.barFill,
                     {
-                      height: `${Math.max(4, heightPercent)}%`,
+                      height: `${heightPercent}%`,
                       backgroundColor:
                         val >= 15
                           ? colors.exhausted.light
@@ -90,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#13151F',
     borderRadius: radii.xl,
     padding: spacing.lg,
-    marginVertical: spacing.sm,
+    marginVertical: spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
   },
@@ -100,57 +107,72 @@ const styles = StyleSheet.create({
   title: {
     ...typography.h4,
     color: '#F8FAFC',
+    marginBottom: 2,
   },
   subtitle: {
     ...typography.caption,
-    color: '#94A3B8',
+    color: '#64748B',
+  },
+  noDataBanner: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: radii.sm,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    marginBottom: spacing.sm,
+    alignItems: 'center',
+  },
+  noDataText: {
+    ...typography.caption,
+    color: '#64748B',
+    fontSize: 11,
   },
   chartScroll: {
-    flexDirection: 'row',
+    paddingVertical: spacing.sm,
     alignItems: 'flex-end',
-    paddingVertical: spacing.xs,
   },
   barColumn: {
-    alignItems: 'center',
     width: 28,
-    marginHorizontal: 3,
+    alignItems: 'center',
+    marginRight: 4,
   },
   barValue: {
-    ...typography.caption,
-    fontSize: 9,
+    fontSize: 10,
     color: '#CBD5E1',
+    fontWeight: '700',
+    height: 14,
     marginBottom: 2,
-    height: 12,
   },
   barTrack: {
     width: 14,
-    height: 100,
+    height: 90,
     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: radii.sm,
+    borderRadius: 7,
     justifyContent: 'flex-end',
     overflow: 'hidden',
   },
   barFill: {
     width: '100%',
-    borderRadius: radii.sm,
+    borderRadius: 7,
   },
   hourLabel: {
     ...typography.caption,
-    fontSize: 10,
+    fontSize: 9,
     color: '#64748B',
-    marginTop: spacing.xs,
+    marginTop: 6,
+    fontFamily: 'monospace',
   },
   axisSummaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.05)',
+    borderTopColor: 'rgba(255, 255, 255, 0.06)',
     paddingTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   axisMarker: {
     ...typography.caption,
-    color: '#64748B',
     fontSize: 10,
+    color: '#475569',
+    fontFamily: 'monospace',
   },
 });
