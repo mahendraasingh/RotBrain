@@ -1,7 +1,7 @@
 /**
  * RotBrain Analytics Screen
  * Comprehensive behavioral analytics featuring daily, weekly, and monthly views,
- * 24-hour activity distribution, and session records.
+ * 24-hour activity distribution, and session records with Two26 Studio styling.
  */
 
 import React, { useState } from 'react';
@@ -11,7 +11,6 @@ import { Activity24HourChart } from './components/Activity24HourChart';
 import { SessionHistoryList } from './components/SessionHistoryList';
 import { DateTimeFormatter } from '../../utils/dateTimeFormatter';
 import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 
 type TimeRangeTab = 'daily' | 'weekly' | 'monthly';
@@ -65,9 +64,18 @@ export const AnalyticsScreen: React.FC = () => {
     <View style={styles.container}>
       {/* Top Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Analytics & Trends</Text>
+        <View style={styles.studioPill}>
+          <View style={styles.studioDot} />
+          <Text style={styles.studioPillText}>ANALYTICS // CHRONO METRICS</Text>
+        </View>
+
+        {/* Dual Magnetic Heading */}
+        <View style={styles.dualHeadingWrap}>
+          <Text style={styles.dualTitleShadow}>Attention Telemetry</Text>
+          <Text style={styles.dualTitleMain}>Attention Telemetry</Text>
+        </View>
         <Text style={styles.subtitle}>
-          Behavioral insights • 24-Hour Timeline
+          Empirical consumption auditing • Strict 24-Hour Timeline
         </Text>
       </View>
 
@@ -81,35 +89,40 @@ export const AnalyticsScreen: React.FC = () => {
                 key={tab}
                 style={[styles.rangeTab, isSelected && styles.rangeTabActive]}
                 onPress={() => setSelectedRange(tab)}
+                activeOpacity={0.7}
               >
                 <Text style={[styles.rangeTabText, isSelected && styles.rangeTabTextActive]}>
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {tab.toUpperCase()}
                 </Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
-        {/* High-Level Overview Metrics */}
-        <View style={styles.kpiContainer}>
-          <View style={styles.kpiItem}>
-            <Text style={styles.kpiLabel}>Total Watched</Text>
-            <Text style={styles.kpiValue}>{totalVideos}</Text>
+        {/* High-Level Overview Metrics in Two26 Bento Grid */}
+        <View style={styles.bentoRow}>
+          <View style={styles.bentoCard}>
+            <View style={styles.bentoHeaderRow}>
+              <Text style={styles.kpiLabel}>TOTAL CONSUMED</Text>
+              <Text style={styles.bentoArrow}>↗</Text>
+            </View>
+            <Text style={styles.kpiValueFlame}>{totalVideos}</Text>
             <Text style={styles.kpiSub}>Shorts & Reels</Text>
           </View>
 
-          <View style={styles.kpiDivider} />
-
-          <View style={styles.kpiItem}>
-            <Text style={styles.kpiLabel}>Total Screen Time</Text>
-            <Text style={[styles.kpiValue, { color: colors.fresh.base }]}>
+          <View style={styles.bentoCard}>
+            <View style={styles.bentoHeaderRow}>
+              <Text style={styles.kpiLabel}>SCREEN TIME</Text>
+              <Text style={styles.bentoArrow}>↗</Text>
+            </View>
+            <Text style={styles.kpiValuePorcelain}>
               {DateTimeFormatter.formatDuration(totalDuration)}
             </Text>
-            <Text style={styles.kpiSub}>Active viewing</Text>
+            <Text style={styles.kpiSub}>Active session time</Text>
           </View>
         </View>
 
-        {/* Detailed Averages Card */}
+        {/* Detailed Averages Bento Card */}
         <View style={styles.averagesCard}>
           <View style={styles.avgRow}>
             <Text style={styles.avgLabel}>Average Session Length</Text>
@@ -120,14 +133,14 @@ export const AnalyticsScreen: React.FC = () => {
 
           <View style={styles.avgRow}>
             <Text style={styles.avgLabel}>Longest Session</Text>
-            <Text style={[styles.avgValue, { color: colors.tired.light }]}>
+            <Text style={[styles.avgValue, { color: colors.two26.flame }]}>
               {DateTimeFormatter.formatDuration(longestSessionSecs)}
             </Text>
           </View>
 
-          <View style={styles.avgRow}>
+          <View style={[styles.avgRow, { borderBottomWidth: 0 }]}>
             <Text style={styles.avgLabel}>Peak Activity Window</Text>
-            <Text style={[styles.avgValue, { color: colors.primaryLight }]}>
+            <Text style={[styles.avgValue, { color: colors.two26.porcelain }]}>
               {peakWindow}
             </Text>
           </View>
@@ -138,14 +151,17 @@ export const AnalyticsScreen: React.FC = () => {
 
         {/* Platform Comparison */}
         <View style={styles.comparisonCard}>
-          <Text style={styles.compHeading}>Platform Consumption Share</Text>
+          <View style={styles.cardHeaderRow}>
+            <Text style={styles.compHeading}>CHANNEL ALLOCATION</Text>
+            <Text style={styles.compSub}>LIVE FEED SHARE</Text>
+          </View>
 
           {/* Instagram Share */}
           <View style={styles.barItem}>
             <View style={styles.barHeader}>
               <Text style={styles.platformName}>Instagram Reels</Text>
               <Text style={styles.platformCount}>
-                {todaySummary.instagramConfirmedCount} videos
+                {todaySummary.instagramConfirmedCount} reels
               </Text>
             </View>
             <View style={styles.barBg}>
@@ -153,7 +169,7 @@ export const AnalyticsScreen: React.FC = () => {
                 style={[
                   styles.barFill,
                   {
-                    backgroundColor: colors.platforms.instagram,
+                    backgroundColor: '#E1306C',
                     width: `${
                       totalVideos > 0
                         ? Math.round(
@@ -172,7 +188,7 @@ export const AnalyticsScreen: React.FC = () => {
             <View style={styles.barHeader}>
               <Text style={styles.platformName}>YouTube Shorts</Text>
               <Text style={styles.platformCount}>
-                {todaySummary.youtubeConfirmedCount} videos
+                {todaySummary.youtubeConfirmedCount} shorts
               </Text>
             </View>
             <View style={styles.barBg}>
@@ -180,7 +196,7 @@ export const AnalyticsScreen: React.FC = () => {
                 style={[
                   styles.barFill,
                   {
-                    backgroundColor: colors.platforms.youtube,
+                    backgroundColor: colors.two26.flame,
                     width: `${
                       totalVideos > 0
                         ? Math.round(
@@ -205,116 +221,221 @@ export const AnalyticsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: '#07080B',
     paddingHorizontal: spacing.screenPadding,
   },
   header: {
     paddingTop: spacing.xxl,
     paddingBottom: spacing.sm,
   },
-  title: {
-    ...typography.h2,
-    color: '#F8FAFC',
+  studioPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#0E1017',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: spacing.xs,
+  },
+  studioDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.two26.flame,
+    marginRight: spacing.xs,
+    shadowColor: colors.two26.flame,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
+  studioPillText: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#A1A1AA',
+    letterSpacing: 1.2,
+    fontFamily: 'monospace',
+  },
+  dualHeadingWrap: {
+    position: 'relative',
+    marginVertical: 4,
+  },
+  dualTitleShadow: {
+    position: 'absolute',
+    top: 2,
+    left: 2,
+    fontSize: 26,
+    fontWeight: '900',
+    color: colors.two26.flame,
+    opacity: 0.35,
+    letterSpacing: -0.6,
+  },
+  dualTitleMain: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#FAF9F6',
+    letterSpacing: -0.6,
   },
   subtitle: {
-    ...typography.caption,
-    color: '#94A3B8',
+    fontSize: 12,
+    color: '#71717A',
+    marginTop: 2,
   },
   scrollContent: {
     paddingBottom: spacing.xxxl,
   },
   tabsRow: {
     flexDirection: 'row',
-    backgroundColor: '#13151F',
-    borderRadius: radii.lg,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xl,
     padding: 3,
     marginVertical: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   rangeTab: {
     flex: 1,
-    paddingVertical: spacing.xs,
+    paddingVertical: 8,
     alignItems: 'center',
-    borderRadius: radii.md,
+    borderRadius: radii.lg,
   },
   rangeTabActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: '#161922',
+    borderWidth: 1,
+    borderColor: colors.two26.flame,
+    shadowColor: colors.two26.flame,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   rangeTabText: {
-    ...typography.caption,
-    color: '#94A3B8',
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#71717A',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   rangeTabTextActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
+    color: '#FAF9F6',
   },
-  kpiContainer: {
+  bentoRow: {
     flexDirection: 'row',
-    backgroundColor: '#13151F',
-    borderRadius: radii.xl,
-    padding: spacing.lg,
+    gap: spacing.sm,
     marginVertical: spacing.xs,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  kpiItem: {
+  bentoCard: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xxl,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.07)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  kpiDivider: {
-    width: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  bentoHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  bentoArrow: {
+    fontSize: 12,
+    color: '#71717A',
   },
   kpiLabel: {
-    ...typography.caption,
-    color: '#94A3B8',
-    textTransform: 'uppercase',
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#71717A',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
-  kpiValue: {
-    ...typography.monoMedium,
-    color: '#F8FAFC',
-    marginVertical: 4,
+  kpiValueFlame: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: colors.two26.flame,
+    letterSpacing: -0.8,
+    marginVertical: 2,
+    fontFamily: 'monospace',
+  },
+  kpiValuePorcelain: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: colors.two26.porcelain,
+    letterSpacing: -0.6,
+    marginVertical: 2,
+    fontFamily: 'monospace',
   },
   kpiSub: {
-    ...typography.caption,
-    color: '#64748B',
+    fontSize: 11,
+    color: '#71717A',
   },
   averagesCard: {
-    backgroundColor: '#13151F',
-    borderRadius: radii.xl,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xxl,
     padding: spacing.lg,
     marginVertical: spacing.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.07)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   avgRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.xs,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.04)',
   },
   avgLabel: {
-    ...typography.bodySmall,
-    color: '#94A3B8',
+    fontSize: 12,
+    color: '#A1A1AA',
+    fontWeight: '600',
   },
   avgValue: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FAF9F6',
+    fontFamily: 'monospace',
   },
   comparisonCard: {
-    backgroundColor: '#13151F',
-    borderRadius: radii.xl,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xxl,
     padding: spacing.lg,
     marginVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.07)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md,
   },
   compHeading: {
-    ...typography.h4,
-    color: '#F8FAFC',
-    marginBottom: spacing.md,
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FAF9F6',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
+  },
+  compSub: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#71717A',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   barItem: {
     marginBottom: spacing.md,
@@ -322,20 +443,22 @@ const styles = StyleSheet.create({
   barHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: spacing.xs,
+    marginBottom: 6,
   },
   platformName: {
-    ...typography.caption,
-    color: '#CBD5E1',
-    fontWeight: '600',
+    fontSize: 12,
+    color: '#D4D4D8',
+    fontWeight: '700',
   },
   platformCount: {
-    ...typography.caption,
-    color: '#94A3B8',
+    fontSize: 11,
+    color: '#71717A',
+    fontFamily: 'monospace',
+    fontWeight: '700',
   },
   barBg: {
     height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: radii.full,
     overflow: 'hidden',
   },
@@ -344,3 +467,4 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
   },
 });
+

@@ -2,14 +2,13 @@
  * RotBrain Activity24HourChart
  *
  * Visual distribution of short-video scrolling across 24 hours (00:00 to 23:00).
- * Strictly adheres to 24-hour time labels with zero AM/PM and zero fake data.
+ * Strictly adheres to 24-hour time labels with zero AM/PM and zero fake data with Two26 Studio styling.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { DateTimeFormatter } from '../../../utils/dateTimeFormatter';
 import { colors } from '../../../theme/colors';
-import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface Activity24HourChartProps {
@@ -33,13 +32,16 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.title}>24-Hour Activity Distribution</Text>
-        <Text style={styles.subtitle}>Hour-by-hour timeline</Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.title}>CHRONO DISTRIBUTION</Text>
+          <Text style={styles.subtitle}>24-HOUR BEHAVIORAL SPECTRUM</Text>
+        </View>
+        <Text style={styles.arrowIcon}>↗</Text>
       </View>
 
       {totalInChart === 0 && (
         <View style={styles.noDataBanner}>
-          <Text style={styles.noDataText}>0 videos recorded across all 24 hours</Text>
+          <Text style={styles.noDataText}>[0 VIDEOS RECORDED ACROSS 24-HOUR SPECTRUM]</Text>
         </View>
       )}
 
@@ -66,10 +68,10 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
                       height: `${heightPercent}%`,
                       backgroundColor:
                         val >= 15
-                          ? colors.exhausted.light
+                          ? colors.two26.flame
                           : val >= 8
-                          ? colors.tired.light
-                          : colors.primaryLight,
+                          ? colors.two26.blush
+                          : colors.two26.porcelain,
                     },
                   ]}
                 />
@@ -84,9 +86,9 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
 
       {/* Axis Marker Summary */}
       <View style={styles.axisSummaryRow}>
-        <Text style={styles.axisMarker}>00:00 (Night)</Text>
-        <Text style={styles.axisMarker}>12:00 (Noon)</Text>
-        <Text style={styles.axisMarker}>23:59 (End)</Text>
+        <Text style={styles.axisMarker}>00:00 [NIGHT]</Text>
+        <Text style={styles.axisMarker}>12:00 [NOON]</Text>
+        <Text style={styles.axisMarker}>23:59 [END]</Text>
       </View>
     </View>
   );
@@ -94,37 +96,61 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#13151F',
-    borderRadius: radii.xl,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xxl,
     padding: spacing.lg,
     marginVertical: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.07)',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
+  titleWrap: {
+    flex: 1,
+  },
   title: {
-    ...typography.h4,
-    color: '#F8FAFC',
-    marginBottom: 2,
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FAF9F6',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
   subtitle: {
-    ...typography.caption,
-    color: '#64748B',
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#71717A',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
+    marginTop: 2,
+  },
+  arrowIcon: {
+    fontSize: 12,
+    color: '#71717A',
   },
   noDataBanner: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: radii.sm,
-    paddingVertical: spacing.xs,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderRadius: radii.md,
+    paddingVertical: 6,
     paddingHorizontal: spacing.sm,
     marginBottom: spacing.sm,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.04)',
   },
   noDataText: {
-    ...typography.caption,
-    color: '#64748B',
-    fontSize: 11,
+    color: '#71717A',
+    fontSize: 10,
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
+    fontWeight: '700',
   },
   chartScroll: {
     paddingVertical: spacing.sm,
@@ -137,8 +163,9 @@ const styles = StyleSheet.create({
   },
   barValue: {
     fontSize: 10,
-    color: '#CBD5E1',
-    fontWeight: '700',
+    color: colors.two26.porcelain,
+    fontWeight: '800',
+    fontFamily: 'monospace',
     height: 14,
     marginBottom: 2,
   },
@@ -155,24 +182,25 @@ const styles = StyleSheet.create({
     borderRadius: 7,
   },
   hourLabel: {
-    ...typography.caption,
     fontSize: 9,
-    color: '#64748B',
+    color: '#71717A',
     marginTop: 6,
     fontFamily: 'monospace',
+    fontWeight: '700',
   },
   axisSummaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.06)',
+    borderTopColor: 'rgba(255, 255, 255, 0.04)',
     paddingTop: spacing.xs,
     marginTop: spacing.sm,
   },
   axisMarker: {
-    ...typography.caption,
-    fontSize: 10,
-    color: '#475569',
+    fontSize: 9,
+    color: '#52525B',
     fontFamily: 'monospace',
+    fontWeight: '800',
   },
 });
+
