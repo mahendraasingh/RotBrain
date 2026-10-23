@@ -16,12 +16,17 @@ interface BrainCharacterViewProps {
   showAura?: boolean;
 }
 
+import brainFresh from '../../../assets/images/brain_fresh.jpg';
+import brainTired from '../../../assets/images/brain_tired.jpg';
+import brainVeryTired from '../../../assets/images/brain_very_tired.jpg';
+import brainExhausted from '../../../assets/images/brain_exhausted.jpg';
+
 // Statically map assets so bundler packages them properly
 const BRAIN_IMAGES: Record<BrainState, any> = {
-  fresh: require('../../../assets/images/brain_fresh.jpg'),
-  tired: require('../../../assets/images/brain_tired.jpg'),
-  very_tired: require('../../../assets/images/brain_very_tired.jpg'),
-  exhausted: require('../../../assets/images/brain_exhausted.jpg'),
+  fresh: brainFresh,
+  tired: brainTired,
+  very_tired: brainVeryTired,
+  exhausted: brainExhausted,
 };
 
 export const BrainCharacterView: React.FC<BrainCharacterViewProps> = ({
@@ -83,7 +88,8 @@ export const BrainCharacterView: React.FC<BrainCharacterViewProps> = ({
     }
   };
 
-  const currentImage = BRAIN_IMAGES[state] || BRAIN_IMAGES.fresh;
+  const rawImage = BRAIN_IMAGES[state] || BRAIN_IMAGES.fresh;
+  const currentImage = typeof rawImage === 'string' ? { uri: rawImage } : rawImage;
 
   return (
     <View style={[styles.container, { width: size + 40, height: size + 40 }]}>
