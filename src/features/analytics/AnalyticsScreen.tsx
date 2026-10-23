@@ -2,6 +2,7 @@
  * RotBrain Analytics Screen
  * Comprehensive behavioral analytics featuring daily, weekly, and monthly views,
  * 24-hour activity distribution, and session records with Two26 Studio styling.
+ * Fully supports dynamic Two26 Light (Blush #F8EEE8) and Dark (Espresso #161413) themes.
  */
 
 import React, { useState } from 'react';
@@ -10,14 +11,15 @@ import { useRotBrainStore } from '../../store/useRotBrainStore';
 import { Activity24HourChart } from './components/Activity24HourChart';
 import { SessionHistoryList } from './components/SessionHistoryList';
 import { DateTimeFormatter } from '../../utils/dateTimeFormatter';
-import { colors } from '../../theme/colors';
+import { colors, getThemeColors } from '../../theme/colors';
 import { spacing, radii } from '../../theme/spacing';
 
 type TimeRangeTab = 'daily' | 'weekly' | 'monthly';
 
 export const AnalyticsScreen: React.FC = () => {
   const [selectedRange, setSelectedRange] = useState<TimeRangeTab>('daily');
-  const { todaySummary, recentSessions } = useRotBrainStore();
+  const { todaySummary, recentSessions, preferences } = useRotBrainStore();
+  const themeColors = getThemeColors(preferences.themePreference);
 
   const totalVideos =
     todaySummary.instagramConfirmedCount + todaySummary.youtubeConfirmedCount;
@@ -61,37 +63,69 @@ export const AnalyticsScreen: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       {/* Top Header */}
       <View style={styles.header}>
-        <View style={styles.studioPill}>
+        <View
+          style={[
+            styles.studioPill,
+            {
+              backgroundColor: themeColors.surface,
+              borderColor: themeColors.surfaceBorder,
+            },
+          ]}
+        >
           <View style={styles.studioDot} />
-          <Text style={styles.studioPillText}>ANALYTICS // CHRONO METRICS</Text>
+          <Text style={[styles.studioPillText, { color: themeColors.textSecondary }]}>
+            ANALYTICS // CHRONO METRICS
+          </Text>
         </View>
 
         {/* Dual Magnetic Heading */}
         <View style={styles.dualHeadingWrap}>
           <Text style={styles.dualTitleShadow}>Attention Telemetry</Text>
-          <Text style={styles.dualTitleMain}>Attention Telemetry</Text>
+          <Text style={[styles.dualTitleMain, { color: themeColors.textPrimary }]}>
+            Attention Telemetry
+          </Text>
         </View>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { color: themeColors.textMuted }]}>
           Empirical consumption auditing • Strict 24-Hour Timeline
         </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Time Range Tabs (Daily, Weekly, Monthly) */}
-        <View style={styles.tabsRow}>
+        <View
+          style={[
+            styles.tabsRow,
+            {
+              backgroundColor: themeColors.surface2,
+              borderColor: themeColors.surfaceBorder,
+            },
+          ]}
+        >
           {(['daily', 'weekly', 'monthly'] as TimeRangeTab[]).map((tab) => {
             const isSelected = selectedRange === tab;
             return (
               <TouchableOpacity
                 key={tab}
-                style={[styles.rangeTab, isSelected && styles.rangeTabActive]}
+                style={[
+                  styles.rangeTab,
+                  isSelected && {
+                    backgroundColor: colors.two26.flame,
+                  },
+                ]}
                 onPress={() => setSelectedRange(tab)}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.rangeTabText, isSelected && styles.rangeTabTextActive]}>
+                <Text
+                  style={[
+                    styles.rangeTabText,
+                    {
+                      color: isSelected ? '#FFFFFF' : themeColors.textMuted,
+                    },
+                  ]}
+                >
                   {tab.toUpperCase()}
                 </Text>
               </TouchableOpacity>
@@ -101,46 +135,84 @@ export const AnalyticsScreen: React.FC = () => {
 
         {/* High-Level Overview Metrics in Two26 Bento Grid */}
         <View style={styles.bentoRow}>
-          <View style={styles.bentoCard}>
+          <View
+            style={[
+              styles.bentoCard,
+              {
+                backgroundColor: themeColors.surface,
+                borderColor: themeColors.surfaceBorder,
+              },
+            ]}
+          >
             <View style={styles.bentoHeaderRow}>
-              <Text style={styles.kpiLabel}>TOTAL CONSUMED</Text>
-              <Text style={styles.bentoArrow}>↗</Text>
+              <Text style={[styles.kpiLabel, { color: themeColors.textMuted }]}>
+                TOTAL CONSUMED
+              </Text>
+              <Text style={[styles.bentoArrow, { color: themeColors.textMuted }]}>↗</Text>
             </View>
             <Text style={styles.kpiValueFlame}>{totalVideos}</Text>
-            <Text style={styles.kpiSub}>Shorts & Reels</Text>
+            <Text style={[styles.kpiSub, { color: themeColors.textSecondary }]}>
+              Shorts & Reels
+            </Text>
           </View>
 
-          <View style={styles.bentoCard}>
+          <View
+            style={[
+              styles.bentoCard,
+              {
+                backgroundColor: themeColors.surface,
+                borderColor: themeColors.surfaceBorder,
+              },
+            ]}
+          >
             <View style={styles.bentoHeaderRow}>
-              <Text style={styles.kpiLabel}>SCREEN TIME</Text>
-              <Text style={styles.bentoArrow}>↗</Text>
+              <Text style={[styles.kpiLabel, { color: themeColors.textMuted }]}>
+                SCREEN TIME
+              </Text>
+              <Text style={[styles.bentoArrow, { color: themeColors.textMuted }]}>↗</Text>
             </View>
-            <Text style={styles.kpiValuePorcelain}>
+            <Text style={[styles.kpiValuePorcelain, { color: themeColors.textPrimary }]}>
               {DateTimeFormatter.formatDuration(totalDuration)}
             </Text>
-            <Text style={styles.kpiSub}>Active session time</Text>
+            <Text style={[styles.kpiSub, { color: themeColors.textSecondary }]}>
+              Active session time
+            </Text>
           </View>
         </View>
 
         {/* Detailed Averages Bento Card */}
-        <View style={styles.averagesCard}>
-          <View style={styles.avgRow}>
-            <Text style={styles.avgLabel}>Average Session Length</Text>
-            <Text style={styles.avgValue}>
+        <View
+          style={[
+            styles.averagesCard,
+            {
+              backgroundColor: themeColors.surface,
+              borderColor: themeColors.surfaceBorder,
+            },
+          ]}
+        >
+          <View style={[styles.avgRow, { borderBottomColor: themeColors.divider }]}>
+            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
+              Average Session Length
+            </Text>
+            <Text style={[styles.avgValue, { color: themeColors.textPrimary }]}>
               {DateTimeFormatter.formatDuration(avgSessionSecs)}
             </Text>
           </View>
 
-          <View style={styles.avgRow}>
-            <Text style={styles.avgLabel}>Longest Session</Text>
+          <View style={[styles.avgRow, { borderBottomColor: themeColors.divider }]}>
+            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
+              Longest Session
+            </Text>
             <Text style={[styles.avgValue, { color: colors.two26.flame }]}>
               {DateTimeFormatter.formatDuration(longestSessionSecs)}
             </Text>
           </View>
 
           <View style={[styles.avgRow, { borderBottomWidth: 0 }]}>
-            <Text style={styles.avgLabel}>Peak Activity Window</Text>
-            <Text style={[styles.avgValue, { color: colors.two26.porcelain }]}>
+            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
+              Peak Activity Window
+            </Text>
+            <Text style={[styles.avgValue, { color: themeColors.textPrimary }]}>
               {peakWindow}
             </Text>
           </View>
@@ -150,21 +222,35 @@ export const AnalyticsScreen: React.FC = () => {
         <Activity24HourChart hourlyCounts={hourlyCounts} />
 
         {/* Platform Comparison */}
-        <View style={styles.comparisonCard}>
+        <View
+          style={[
+            styles.comparisonCard,
+            {
+              backgroundColor: themeColors.surface,
+              borderColor: themeColors.surfaceBorder,
+            },
+          ]}
+        >
           <View style={styles.cardHeaderRow}>
-            <Text style={styles.compHeading}>CHANNEL ALLOCATION</Text>
-            <Text style={styles.compSub}>LIVE FEED SHARE</Text>
+            <Text style={[styles.compHeading, { color: themeColors.textPrimary }]}>
+              CHANNEL ALLOCATION
+            </Text>
+            <Text style={[styles.compSub, { color: themeColors.textMuted }]}>
+              LIVE FEED SHARE
+            </Text>
           </View>
 
           {/* Instagram Share */}
           <View style={styles.barItem}>
             <View style={styles.barHeader}>
-              <Text style={styles.platformName}>Instagram Reels</Text>
-              <Text style={styles.platformCount}>
+              <Text style={[styles.platformName, { color: themeColors.textPrimary }]}>
+                Instagram Reels
+              </Text>
+              <Text style={[styles.platformCount, { color: themeColors.textSecondary }]}>
                 {todaySummary.instagramConfirmedCount} reels
               </Text>
             </View>
-            <View style={styles.barBg}>
+            <View style={[styles.barBg, { backgroundColor: themeColors.surface2 }]}>
               <View
                 style={[
                   styles.barFill,
@@ -186,12 +272,14 @@ export const AnalyticsScreen: React.FC = () => {
           {/* YouTube Share */}
           <View style={styles.barItem}>
             <View style={styles.barHeader}>
-              <Text style={styles.platformName}>YouTube Shorts</Text>
-              <Text style={styles.platformCount}>
+              <Text style={[styles.platformName, { color: themeColors.textPrimary }]}>
+                YouTube Shorts
+              </Text>
+              <Text style={[styles.platformCount, { color: themeColors.textSecondary }]}>
                 {todaySummary.youtubeConfirmedCount} shorts
               </Text>
             </View>
-            <View style={styles.barBg}>
+            <View style={[styles.barBg, { backgroundColor: themeColors.surface2 }]}>
               <View
                 style={[
                   styles.barFill,
@@ -221,23 +309,20 @@ export const AnalyticsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
-    paddingHorizontal: spacing.screenPadding,
+    paddingTop: 48,
+    paddingHorizontal: spacing.lg,
   },
   header: {
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
   studioPill: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: '#0E1017',
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
     borderRadius: radii.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.xs,
   },
   studioDot: {
@@ -254,7 +339,6 @@ const styles = StyleSheet.create({
   studioPillText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#A1A1AA',
     letterSpacing: 1.2,
     fontFamily: 'monospace',
   },
@@ -269,18 +353,16 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '900',
     color: colors.two26.flame,
-    opacity: 0.35,
+    opacity: 0.25,
     letterSpacing: -0.6,
   },
   dualTitleMain: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FAF9F6',
     letterSpacing: -0.6,
   },
   subtitle: {
     fontSize: 12,
-    color: '#71717A',
     marginTop: 2,
   },
   scrollContent: {
@@ -288,12 +370,10 @@ const styles = StyleSheet.create({
   },
   tabsRow: {
     flexDirection: 'row',
-    backgroundColor: '#0E1017',
     borderRadius: radii.xl,
     padding: 3,
-    marginVertical: spacing.md,
+    marginVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   rangeTab: {
     flex: 1,
@@ -301,24 +381,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radii.lg,
   },
-  rangeTabActive: {
-    backgroundColor: '#161922',
-    borderWidth: 1,
-    borderColor: colors.two26.flame,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
   rangeTabText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 0.8,
-  },
-  rangeTabTextActive: {
-    color: '#FAF9F6',
   },
   bentoRow: {
     flexDirection: 'row',
@@ -327,15 +394,9 @@ const styles = StyleSheet.create({
   },
   bentoCard: {
     flex: 1,
-    backgroundColor: '#0E1017',
     borderRadius: radii.xxl,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.07)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
   },
   bentoHeaderRow: {
     flexDirection: 'row',
@@ -345,12 +406,10 @@ const styles = StyleSheet.create({
   },
   bentoArrow: {
     fontSize: 12,
-    color: '#71717A',
   },
   kpiLabel: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 1,
   },
@@ -365,26 +424,18 @@ const styles = StyleSheet.create({
   kpiValuePorcelain: {
     fontSize: 24,
     fontWeight: '900',
-    color: colors.two26.porcelain,
     letterSpacing: -0.6,
     marginVertical: 2,
     fontFamily: 'monospace',
   },
   kpiSub: {
     fontSize: 11,
-    color: '#71717A',
   },
   averagesCard: {
-    backgroundColor: '#0E1017',
     borderRadius: radii.xxl,
     padding: spacing.lg,
     marginVertical: spacing.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.07)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
   },
   avgRow: {
     flexDirection: 'row',
@@ -392,30 +443,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.04)',
   },
   avgLabel: {
     fontSize: 12,
-    color: '#A1A1AA',
     fontWeight: '600',
   },
   avgValue: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#FAF9F6',
     fontFamily: 'monospace',
   },
   comparisonCard: {
-    backgroundColor: '#0E1017',
     borderRadius: radii.xxl,
     padding: spacing.lg,
     marginVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.07)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -426,14 +468,12 @@ const styles = StyleSheet.create({
   compHeading: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#FAF9F6',
     fontFamily: 'monospace',
     letterSpacing: 1,
   },
   compSub: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 0.8,
   },
@@ -447,18 +487,15 @@ const styles = StyleSheet.create({
   },
   platformName: {
     fontSize: 12,
-    color: '#D4D4D8',
     fontWeight: '700',
   },
   platformCount: {
     fontSize: 11,
-    color: '#71717A',
     fontFamily: 'monospace',
     fontWeight: '700',
   },
   barBg: {
     height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     borderRadius: radii.full,
     overflow: 'hidden',
   },
@@ -467,4 +504,3 @@ const styles = StyleSheet.create({
     borderRadius: radii.full,
   },
 });
-

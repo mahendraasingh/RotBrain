@@ -2,14 +2,16 @@
  * RotBrain SessionHistoryList
  * Displays tracked viewing sessions with strict 24-hour time ranges,
  * platform badges, and detection quality indicators with Two26 Studio styling.
+ * Supports dynamic Two26 Light / Dark themes.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { ViewingSession } from '../../../types/session';
 import { DateTimeFormatter } from '../../../utils/dateTimeFormatter';
-import { colors } from '../../../theme/colors';
+import { colors, getThemeColors } from '../../../theme/colors';
 import { spacing, radii } from '../../../theme/spacing';
+import { useRotBrainStore } from '../../../store/useRotBrainStore';
 
 interface SessionHistoryListProps {
   sessions: ViewingSession[];
@@ -20,12 +22,25 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
   sessions,
   onDeleteSession,
 }) => {
+  const { preferences } = useRotBrainStore();
+  const themeColors = getThemeColors(preferences.themePreference);
+
   if (sessions.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View
+        style={[
+          styles.emptyContainer,
+          {
+            backgroundColor: themeColors.surface,
+            borderColor: themeColors.surfaceBorder,
+          },
+        ]}
+      >
         <Text style={styles.emptyIcon}>◈</Text>
-        <Text style={styles.emptyTitle}>NO SESSIONS RECORDED</Text>
-        <Text style={styles.emptySubtitle}>
+        <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
+          NO SESSIONS RECORDED
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: themeColors.textSecondary }]}>
           Open Instagram or YouTube with tracking enabled to start capturing continuous scroll telemetry.
         </Text>
       </View>
@@ -35,8 +50,12 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
-        <Text style={styles.listHeader}>SESSION LOGS</Text>
-        <Text style={styles.countTag}>[{sessions.length} RECORDED]</Text>
+        <Text style={[styles.listHeader, { color: themeColors.textPrimary }]}>
+          SESSION LOGS
+        </Text>
+        <Text style={[styles.countTag, { color: themeColors.textMuted }]}>
+          [{sessions.length} RECORDED]
+        </Text>
       </View>
 
       {sessions.map((session) => {
@@ -51,17 +70,48 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
         const relativeDate = DateTimeFormatter.formatRelativeDateTime24(session.startedAt);
 
         return (
-          <View key={session.id} style={styles.sessionCard}>
+          <View
+            key={session.id}
+            style={[
+              styles.sessionCard,
+              {
+                backgroundColor: themeColors.surface,
+                borderColor: themeColors.surfaceBorder,
+              },
+            ]}
+          >
             <View style={styles.cardHeader}>
-              <View style={styles.platformBadge}>
+              <View
+                style={[
+                  styles.platformBadge,
+                  {
+                    backgroundColor: themeColors.surface2,
+                    borderColor: themeColors.surfaceBorder,
+                  },
+                ]}
+              >
                 <View style={[styles.platformDot, { backgroundColor: brandColor }]} />
                 <Text style={[styles.platformText, { color: brandColor }]}>
                   {isInstagram ? 'INSTAGRAM REELS' : 'YOUTUBE SHORTS'}
                 </Text>
               </View>
 
-              <View style={styles.qualityBadge}>
-                <Text style={styles.qualityText}>
+              <View
+                style={[
+                  styles.qualityBadge,
+                  {
+                    backgroundColor: themeColors.chipBg,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.qualityText,
+                    {
+                      color: themeColors.chipText,
+                    },
+                  ]}
+                >
                   {session.detectionQuality === 'confirmed' ? 'CONFIRMED' : 'ESTIMATED'}
                 </Text>
               </View>
@@ -69,16 +119,22 @@ export const SessionHistoryList: React.FC<SessionHistoryListProps> = ({
 
             <View style={styles.contentRow}>
               <View>
-                <Text style={styles.timeRange}>{timeRange24}</Text>
-                <Text style={styles.relativeDate}>{relativeDate}</Text>
+                <Text style={[styles.timeRange, { color: themeColors.textPrimary }]}>
+                  {timeRange24}
+                </Text>
+                <Text style={[styles.relativeDate, { color: themeColors.textMuted }]}>
+                  {relativeDate}
+                </Text>
               </View>
 
               <View style={styles.statsColumn}>
-                <Text style={styles.videoCount}>
+                <Text style={[styles.videoCount, { color: themeColors.textPrimary }]}>
                   {session.confirmedVideoCount}{' '}
-                  <Text style={styles.videoCountLabel}>reels</Text>
+                  <Text style={[styles.videoCountLabel, { color: themeColors.textMuted }]}>
+                    reels
+                  </Text>
                 </Text>
-                <Text style={styles.duration}>
+                <Text style={[styles.duration, { color: themeColors.textSecondary }]}>
                   {DateTimeFormatter.formatDuration(session.durationSeconds)}
                 </Text>
               </View>
@@ -112,25 +168,21 @@ const styles = StyleSheet.create({
   listHeader: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#FAF9F6',
     fontFamily: 'monospace',
     letterSpacing: 1,
   },
   countTag: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 0.8,
   },
   emptyContainer: {
-    backgroundColor: '#0E1017',
     borderRadius: radii.xxl,
     padding: spacing.xxl,
     alignItems: 'center',
     marginVertical: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   emptyIcon: {
     fontSize: 28,
@@ -138,116 +190,100 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   emptyTitle: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '800',
-    color: '#FAF9F6',
     fontFamily: 'monospace',
     letterSpacing: 1,
-    marginBottom: spacing.xs,
+    marginBottom: 6,
   },
   emptySubtitle: {
     fontSize: 12,
-    color: '#71717A',
     textAlign: 'center',
     lineHeight: 18,
-    paddingHorizontal: spacing.md,
+    maxWidth: 280,
   },
   sessionCard: {
-    backgroundColor: '#0E1017',
     borderRadius: radii.xl,
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: spacing.sm,
   },
   platformBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radii.full,
+    borderWidth: 1,
   },
   platformDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    marginRight: spacing.xs,
+    marginRight: 6,
   },
   platformText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '800',
     fontFamily: 'monospace',
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
   },
   qualityBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   qualityText: {
-    color: '#A1A1AA',
-    fontSize: 9,
-    fontFamily: 'monospace',
+    fontSize: 8,
     fontWeight: '800',
-    letterSpacing: 0.5,
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   contentRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'baseline',
-    marginTop: spacing.xs,
+    alignItems: 'center',
   },
   timeRange: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '800',
-    color: '#FAF9F6',
     fontFamily: 'monospace',
-    letterSpacing: -0.3,
+    marginBottom: 2,
   },
   relativeDate: {
-    fontSize: 10,
-    color: '#71717A',
-    fontFamily: 'monospace',
-    marginTop: 2,
+    fontSize: 11,
   },
   statsColumn: {
     alignItems: 'flex-end',
   },
   videoCount: {
     fontSize: 16,
-    color: colors.two26.flame,
     fontWeight: '900',
     fontFamily: 'monospace',
   },
   videoCountLabel: {
     fontSize: 10,
-    color: '#71717A',
     fontWeight: '700',
   },
   duration: {
     fontSize: 11,
-    color: '#A1A1AA',
     fontFamily: 'monospace',
     marginTop: 2,
   },
   deleteButton: {
-    marginTop: spacing.sm,
-    paddingTop: spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.04)',
+    marginTop: spacing.xs,
     alignSelf: 'flex-end',
   },
   deleteText: {
+    fontSize: 9,
     color: '#EF4444',
-    fontSize: 10,
     fontFamily: 'monospace',
     fontWeight: '700',
   },
 });
-

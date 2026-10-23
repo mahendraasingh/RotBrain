@@ -11,20 +11,30 @@ import { MainDashboardScreen } from '../features/dashboard/MainDashboardScreen';
 import { AnalyticsScreen } from '../features/analytics/AnalyticsScreen';
 import { SettingsScreen } from '../features/settings/SettingsScreen';
 import { FloatingMobileCounter } from '../features/dashboard/components/FloatingMobileCounter';
-import { colors } from '../theme/colors';
+import { colors, getThemeColors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
+import { useRotBrainStore } from '../store/useRotBrainStore';
 
 const Tab = createBottomTabNavigator();
 
 export const AppTabs: React.FC = () => {
+  const { preferences } = useRotBrainStore();
+  const themeColors = getThemeColors(preferences.themePreference);
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarStyle: styles.tabBar,
+          tabBarStyle: [
+            styles.tabBar,
+            {
+              backgroundColor: themeColors.surface,
+              borderTopColor: themeColors.surfaceBorder,
+            },
+          ],
           tabBarActiveTintColor: colors.two26.flame,
-          tabBarInactiveTintColor: '#52525B',
+          tabBarInactiveTintColor: themeColors.textMuted,
           tabBarLabelStyle: styles.tabLabel,
         }}
       >
