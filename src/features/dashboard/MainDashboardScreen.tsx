@@ -1,48 +1,39 @@
 /**
  * RotBrain Main Dashboard Screen
  *
- * Flagship Two26 Studio-inspired creative dashboard:
- * - Real Three.js 3D WebGL neural core & Mascot support
- * - Dynamic Theme Switcher (Light: #F8EEE8 warm blush / Dark: #161413 espresso noir)
- * - Dual-layer magnetic typography in header with offset flame shadow
- * - Strict 24-hour technical timer pill with glowing pulse
- * - Smooth 3D scroll trigger animations with perspective card tilting
- * - Bento metric tiles with diagonal studio arrow indicators (↗)
- * - Porcelain & Flame cross-platform telemetry
- * - Zero harsh green text or muddy backgrounds
+ * Core application hub featuring:
+ * - Live 24-hour clock (strict HH:mm format)
+ * - Dynamic BrainStatusCard with 3D mascot & milestone progression
+ * - Platform filter switcher (Combined, Instagram Reels, YouTube Shorts)
+ * - Daily metric statistics (Confirmed count, Duration, Sessions, Target)
+ * - Live session monitoring controls
  */
 
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, RefreshControl, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { useRotBrainStore } from '../../store/useRotBrainStore';
 import { BrainStatusCard } from '../brain/BrainStatusCard';
 import { PlatformFilterTabs } from './components/PlatformFilterTabs';
 import { StatMetricCard } from './components/StatMetricCard';
 import { LiveSessionIndicator } from './components/LiveSessionIndicator';
 import { DateTimeFormatter } from '../../utils/dateTimeFormatter';
-import { colors, getThemeColors } from '../../theme/colors';
+import { colors } from '../../theme/colors';
+import { typography } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 
 export const MainDashboardScreen: React.FC = () => {
   const {
     todaySummary,
     preferences,
-    updatePreferences,
     setDashboardFilter,
     getFilteredStats,
     checkLocalDayReset,
   } = useRotBrainStore();
 
-  const isLight = preferences.themePreference === 'light';
-  const theme = getThemeColors(preferences.themePreference);
-
   const [currentTime24, setCurrentTime24] = useState<string>(
     DateTimeFormatter.formatTimeSeconds24(new Date())
   );
   const [refreshing, setRefreshing] = useState(false);
-
-  // Smooth 3D Scroll Trigger Animation Driver
-  const scrollY = useRef(new Animated.Value(0)).current;
 
   // Keep live 24-hour clock updated
   useEffect(() => {
@@ -58,12 +49,9 @@ export const MainDashboardScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const toggleTheme = () => {
-    updatePreferences({ themePreference: isLight ? 'dark' : 'light' });
-  };
-
   const filteredStats = getFilteredStats();
 
+  // Calculate total confirmed across active platforms for brain state
   const totalActiveConfirmed =
     (preferences.instagramTrackingEnabled ? todaySummary.instagramConfirmedCount : 0) +
     (preferences.youtubeTrackingEnabled ? todaySummary.youtubeConfirmedCount : 0);
@@ -73,98 +61,39 @@ export const MainDashboardScreen: React.FC = () => {
     Math.round((filteredStats.confirmedCount / preferences.dailyGoal) * 100)
   );
 
-  // 3D Scroll Interpolations
-  const brainCardRotateX = scrollY.interpolate({
-    inputRange: [-60, 0, 160],
-    outputRange: ['-6deg', '0deg', '8deg'],
-    extrapolate: 'clamp',
-  });
-
-  const brainCardScale = scrollY.interpolate({
-    inputRange: [-80, 0, 200],
-    outputRange: [1.03, 1, 0.97],
-    extrapolate: 'clamp',
-  });
-
-  const bentoGridTranslateY = scrollY.interpolate({
-    inputRange: [0, 180],
-    outputRange: [0, -10],
-    extrapolate: 'clamp',
-  });
-
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Two26 Studio Dual Header with Theme Switcher & 24H Clock */}
+    <View style={styles.container}>
+      {/* Top App Header with Strict 24-Hour Timer */}
       <View style={styles.topHeader}>
-        <View style={styles.brandTitleBlock}>
-          <View style={styles.dualHeaderWrap}>
-            <Text style={styles.dualTitleShadow}>RotBrain</Text>
-            <Text style={[styles.dualTitleMain, { color: theme.textPrimary }]}>RotBrain</Text>
-          </View>
-          <Text style={[styles.studioSubtitle, { color: theme.textMuted }]}>
-            TWO26 STUDIO // ATTENTION LABS
-          </Text>
+        <View>
+          <Text style={styles.appTitle}>RotBrain</Text>
         </View>
 
-        {/* Right Header Controls: Theme Toggle & 24-Hour Timer */}
-        <View style={styles.headerRightControls}>
-          {/* Light / Dark Mode Switcher */}
-          <TouchableOpacity
-            style={[
-              styles.themeTogglePill,
-              { backgroundColor: theme.surface, borderColor: theme.surfaceBorder },
-            ]}
-            onPress={toggleTheme}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.themeToggleIcon}>{isLight ? '☾' : '☀'}</Text>
-            <Text style={[styles.themeToggleText, { color: theme.textPrimary }]}>
-              {isLight ? 'DARK' : 'LIGHT'}
-            </Text>
-          </TouchableOpacity>
-
-          {/* 24-Hour Technical Timer Pill */}
-          <View style={[styles.clockPill, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
-            <View style={styles.clockFlameDot} />
-            <Text style={[styles.clockText, { color: theme.textPrimary }]}>{currentTime24}</Text>
-            <Text style={styles.clockBadge24}>24H</Text>
-          </View>
+        {/* 24-Hour Clock */}
+        <View style={styles.clockPill}>
+          <Text style={styles.clockDot}>●</Text>
+          <Text style={styles.clockText}>{currentTime24}</Text>
         </View>
       </View>
 
-      <Animated.ScrollView
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.two26.flame}
+            tintColor={colors.primary}
           />
         }
       >
-        {/* Dynamic Brain Character & Milestone Card with 3D Scroll Trigger Tilt */}
-        <Animated.View
-          style={{
-            transform: [
-              { perspective: 1000 },
-              { rotateX: brainCardRotateX },
-              { scale: brainCardScale },
-            ],
-          }}
-        >
-          <BrainStatusCard totalConfirmedCount={totalActiveConfirmed} />
-        </Animated.View>
+        {/* Dynamic Brain Character & Milestone Card */}
+        <BrainStatusCard totalConfirmedCount={totalActiveConfirmed} />
 
-        {/* Live Active Feed Session Indicator */}
+        {/* Live Session Activity Bar */}
         <LiveSessionIndicator />
 
-        {/* Two26 Tactile Platform Filter Pill */}
+        {/* Platform Filter Tabs */}
         <PlatformFilterTabs
           selectedFilter={preferences.selectedDashboardFilter}
           onSelectFilter={setDashboardFilter}
@@ -172,104 +101,88 @@ export const MainDashboardScreen: React.FC = () => {
           isYoutubeEnabled={preferences.youtubeTrackingEnabled}
         />
 
-        {/* Today's Overview Section Header */}
+        {/* Today's Overview Section */}
         <View style={styles.overviewHeader}>
-          <View style={styles.overviewLabelRow}>
-            <Text style={styles.overviewBullet}>●</Text>
-            <Text style={[styles.overviewTitle, { color: theme.textPrimary }]}>Today's Telemetry</Text>
-          </View>
-          <View style={[styles.filterChip, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
-            <Text style={[styles.filterChipText, { color: theme.textSecondary }]}>
-              VIEW: {preferences.selectedDashboardFilter.toUpperCase()}
-            </Text>
-          </View>
+          <Text style={styles.overviewTitle}>Today's Overview</Text>
+          <Text style={styles.overviewFilterLabel}>
+            Filtered: {preferences.selectedDashboardFilter.toUpperCase()}
+          </Text>
         </View>
 
-        {/* 2x2 Bento Metric Grid with 3D Elevation */}
-        <Animated.View
-          style={{
-            transform: [{ translateY: bentoGridTranslateY }],
-          }}
-        >
-          <View style={styles.gridRow}>
-            <StatMetricCard
-              label="Confirmed Reels"
-              value={filteredStats.confirmedCount}
-              subValue={`Target limit: ${preferences.dailyGoal}`}
-              icon="🎬"
-              accentColor={colors.two26.flame}
-            />
+        {/* 2x2 Metric Grid */}
+        <View style={styles.gridRow}>
+          <StatMetricCard
+            label="Confirmed Videos"
+            value={filteredStats.confirmedCount}
+            subValue={`Target limit: ${preferences.dailyGoal}`}
+            icon="🎬"
+            accentColor={colors.primaryLight}
+          />
 
-            <StatMetricCard
-              label="Feed Duration"
-              value={DateTimeFormatter.formatDuration(filteredStats.durationSeconds)}
-              subValue="Active viewing interval"
-              icon="⏱️"
-              accentColor={colors.two26.primary60}
-            />
-          </View>
+          <StatMetricCard
+            label="Viewing Time"
+            value={DateTimeFormatter.formatDuration(filteredStats.durationSeconds)}
+            subValue="Foreground feed time"
+            icon="⏱️"
+            accentColor={colors.fresh.base}
+          />
+        </View>
 
-          <View style={styles.gridRow}>
-            <StatMetricCard
-              label="Feed Launches"
-              value={filteredStats.sessionCount}
-              subValue="Distinct app entries"
-              icon="📱"
-              accentColor={colors.two26.primary}
-            />
+        <View style={styles.gridRow}>
+          <StatMetricCard
+            label="Sessions"
+            value={filteredStats.sessionCount}
+            subValue="Distinct app launches"
+            icon="📱"
+            accentColor={colors.tired.light}
+          />
 
-            <StatMetricCard
-              label="Budget Used"
-              value={`${goalPercentage}%`}
-              subValue={goalPercentage >= 100 ? 'Quota exceeded' : 'Healthy balance'}
-              icon="🎯"
-              accentColor={goalPercentage >= 100 ? colors.danger : colors.two26.flame}
-            />
-          </View>
-        </Animated.View>
+          <StatMetricCard
+            label="Daily Goal"
+            value={`${goalPercentage}%`}
+            subValue={goalPercentage >= 100 ? 'Limit reached' : 'Within budget'}
+            icon="🎯"
+            accentColor={goalPercentage >= 100 ? colors.danger : colors.success}
+          />
+        </View>
 
-        {/* Two26 Platform Breakdown Card */}
+        {/* Platform Breakdown Card (When both enabled) */}
         {preferences.instagramTrackingEnabled && preferences.youtubeTrackingEnabled && (
-          <View style={[styles.breakdownCard, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
-            <View style={styles.breakdownHeader}>
-              <Text style={[styles.breakdownTitle, { color: theme.textSecondary }]}>CROSS-PLATFORM ALLOCATION</Text>
-              <Text style={styles.breakdownStudioTag}>[01 // TELEMETRY]</Text>
-            </View>
+          <View style={styles.breakdownCard}>
+            <Text style={styles.breakdownTitle}>Platform Split</Text>
 
             <View style={styles.splitRow}>
               {/* Instagram Stat */}
               <View style={styles.splitItem}>
                 <View style={styles.splitHeader}>
                   <Text style={[styles.splitDot, { color: colors.platforms.instagram }]}>●</Text>
-                  <Text style={[styles.splitName, { color: theme.textPrimary }]}>Instagram Reels</Text>
+                  <Text style={styles.splitName}>Reels</Text>
                 </View>
-                <Text style={[styles.splitCount, { color: theme.textPrimary }]}>
-                  {todaySummary.instagramConfirmedCount} reels
+                <Text style={styles.splitCount}>
+                  {todaySummary.instagramConfirmedCount} videos
                 </Text>
-                <Text style={[styles.splitDuration, { color: theme.textMuted }]}>
+                <Text style={styles.splitDuration}>
                   {DateTimeFormatter.formatDuration(todaySummary.instagramDurationSeconds)}
                 </Text>
               </View>
-
-              <View style={[styles.splitDivider, { backgroundColor: theme.divider }]} />
 
               {/* YouTube Stat */}
               <View style={styles.splitItem}>
                 <View style={styles.splitHeader}>
                   <Text style={[styles.splitDot, { color: colors.platforms.youtube }]}>●</Text>
-                  <Text style={[styles.splitName, { color: theme.textPrimary }]}>YouTube Shorts</Text>
+                  <Text style={styles.splitName}>Shorts</Text>
                 </View>
-                <Text style={[styles.splitCount, { color: theme.textPrimary }]}>
-                  {todaySummary.youtubeConfirmedCount} shorts
+                <Text style={styles.splitCount}>
+                  {todaySummary.youtubeConfirmedCount} videos
                 </Text>
-                <Text style={[styles.splitDuration, { color: theme.textMuted }]}>
+                <Text style={styles.splitDuration}>
                   {DateTimeFormatter.formatDuration(todaySummary.youtubeDurationSeconds)}
                 </Text>
               </View>
             </View>
           </View>
         )}
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -277,6 +190,7 @@ export const MainDashboardScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#0B0C10',
     paddingHorizontal: spacing.screenPadding,
   },
   topHeader: {
@@ -286,88 +200,31 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xxl,
     paddingBottom: spacing.sm,
   },
-  brandTitleBlock: {
-    justifyContent: 'center',
-  },
-  dualHeaderWrap: {
-    position: 'relative',
-  },
-  dualTitleShadow: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    fontSize: 26,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    opacity: 0.35,
-    letterSpacing: -0.8,
-  },
-  dualTitleMain: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.8,
-  },
-  studioSubtitle: {
-    fontSize: 8,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 1.2,
-    marginTop: 2,
-  },
-  headerRightControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  themeTogglePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-    borderWidth: 1,
-  },
-  themeToggleIcon: {
-    fontSize: 10,
-    color: colors.two26.flame,
-    marginRight: 4,
-  },
-  themeToggleText: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.5,
+  appTitle: {
+    ...typography.h2,
+    color: '#F8FAFC',
+    letterSpacing: -0.5,
   },
   clockPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 5,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
     borderRadius: radii.full,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  clockFlameDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.two26.flame,
-    marginRight: 6,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
+  clockDot: {
+    color: colors.success,
+    fontSize: 10,
+    marginRight: spacing.xs,
   },
   clockText: {
-    fontSize: 11,
+    ...typography.caption,
+    color: '#F8FAFC',
     fontFamily: 'monospace',
     fontWeight: '700',
-  },
-  clockBadge24: {
-    fontSize: 8,
-    color: colors.two26.flame,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    marginLeft: 6,
   },
   scrollContent: {
     paddingBottom: spacing.xxxl,
@@ -375,76 +232,44 @@ const styles = StyleSheet.create({
   overviewHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'baseline',
     marginTop: spacing.md,
     marginBottom: spacing.xs,
   },
-  overviewLabelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  overviewBullet: {
-    color: colors.two26.flame,
-    fontSize: 10,
-    marginRight: 6,
-  },
   overviewTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: -0.3,
+    ...typography.h3,
+    color: '#F8FAFC',
   },
-  filterChip: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    borderWidth: 1,
-  },
-  filterChipText: {
-    fontSize: 8,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.6,
+  overviewFilterLabel: {
+    ...typography.caption,
+    color: '#64748B',
+    fontWeight: '700',
   },
   gridRow: {
     flexDirection: 'row',
-    marginHorizontal: -4,
+    marginHorizontal: -spacing.xs,
   },
   breakdownCard: {
-    borderRadius: 20,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.lg,
     marginTop: spacing.md,
     borderWidth: 1,
-  },
-  breakdownHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   breakdownTitle: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 1,
-  },
-  breakdownStudioTag: {
-    fontSize: 9,
-    color: colors.two26.flame,
-    fontFamily: 'monospace',
-    fontWeight: '700',
+    ...typography.caption,
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: spacing.md,
   },
   splitRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
   },
   splitItem: {
     alignItems: 'center',
-    flex: 1,
-  },
-  splitDivider: {
-    width: 1,
-    height: 40,
   },
   splitHeader: {
     flexDirection: 'row',
@@ -452,22 +277,22 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   splitDot: {
-    fontSize: 10,
+    fontSize: 12,
     marginRight: 4,
   },
   splitName: {
-    fontSize: 12,
-    fontWeight: '700',
+    ...typography.bodyMedium,
+    color: '#CBD5E1',
+    fontWeight: '600',
   },
   splitCount: {
-    fontSize: 18,
-    fontWeight: '900',
-    fontFamily: 'monospace',
+    ...typography.h4,
+    color: '#F8FAFC',
+    fontWeight: '700',
   },
   splitDuration: {
-    fontSize: 10,
+    ...typography.caption,
+    color: '#94A3B8',
     marginTop: 2,
-    fontFamily: 'monospace',
   },
 });
-

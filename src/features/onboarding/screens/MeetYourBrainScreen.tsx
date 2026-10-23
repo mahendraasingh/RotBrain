@@ -1,6 +1,6 @@
 /**
- * RotBrain Onboarding Screen 2: Meet Your Brain
- * Introduces the 4 brain milestone states with interactive selection and Two26 Studio styling.
+ * RotBrain Onboarding Screen 3: Meet Your Brain
+ * Introduces the 4 brain milestone states with interactive selection.
  */
 
 import React, { useState } from 'react';
@@ -8,6 +8,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { BrainCharacterView } from '../../brain/BrainCharacterView';
 import { BrainState, BRAIN_STATE_CONFIGS } from '../../../types/brain';
 import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface MeetYourBrainScreenProps {
@@ -27,15 +28,14 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Step Indicator */}
-      <View style={styles.stepBadge}>
-        <View style={styles.dot} />
-        <Text style={styles.stepText}>STEP 02 // 05 — BRAIN TELEMETRY</Text>
+      <View style={styles.stepIndicator}>
+        <Text style={styles.stepText}>STEP 2 OF 5 — THE 4 BRAIN STATES</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Dynamic Character Mascot with 3D Interactive Tilt */}
+        {/* Dynamic Character Mascot */}
         <View style={styles.mascotContainer}>
-          <BrainCharacterView state={activeTab} size={180} />
+          <BrainCharacterView state={activeTab} size={160} />
         </View>
 
         {/* State Selector Tabs */}
@@ -48,7 +48,10 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
                 key={state}
                 style={[
                   styles.tabButton,
-                  isSelected && styles.tabButtonSelected,
+                  isSelected && {
+                    backgroundColor: conf.badgeBg,
+                    borderColor: conf.accentColor,
+                  },
                 ]}
                 onPress={() => setActiveTab(state)}
                 activeOpacity={0.7}
@@ -56,7 +59,7 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
                 <Text
                   style={[
                     styles.tabButtonText,
-                    isSelected && styles.tabButtonTextSelected,
+                    isSelected && { color: conf.accentColor, fontWeight: '700' },
                   ]}
                 >
                   {state === 'very_tired' ? 'V. Tired' : state.charAt(0).toUpperCase() + state.slice(1)}
@@ -69,25 +72,23 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
         {/* State Details Card */}
         <View style={[styles.detailCard, { borderColor: activeConfig.accentColor }]}>
           <View style={styles.titleRow}>
-            <View>
-              <Text style={styles.stateSubtitle}>{activeConfig.subtitle}</Text>
-              <Text style={[styles.stateTitle, { color: activeConfig.accentColor }]}>
-                {activeConfig.displayName}
-              </Text>
-            </View>
-            <View style={[styles.rangeBadge, { backgroundColor: activeConfig.badgeBg, borderColor: activeConfig.accentColor }]}>
+            <Text style={[styles.stateTitle, { color: activeConfig.accentColor }]}>
+              {activeConfig.displayName}
+            </Text>
+            <View style={[styles.rangeBadge, { backgroundColor: activeConfig.badgeBg }]}>
               <Text style={[styles.rangeText, { color: activeConfig.accentColor }]}>
                 {activeConfig.minCount}
-                {activeConfig.maxCount ? `–${activeConfig.maxCount}` : '+'} Reels
+                {activeConfig.maxCount ? `–${activeConfig.maxCount}` : '+'} Videos
               </Text>
             </View>
           </View>
 
+          <Text style={styles.stateSubtitle}>{activeConfig.subtitle}</Text>
           <Text style={styles.stateDescription}>{activeConfig.description}</Text>
 
           <View style={styles.disclaimerBox}>
             <Text style={styles.disclaimerText}>
-              [NOTE] Character degradation is a biological metaphor for attention fatigue, not clinical diagnostics.
+              Note: The brain's appearance is a behavioral milestone reminder to encourage balance, not a clinical or medical measurement.
             </Text>
           </View>
         </View>
@@ -96,12 +97,11 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
       {/* Navigation Buttons */}
       <View style={styles.navRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.nextButton} onPress={onNext} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.nextButton} onPress={onNext}>
           <Text style={styles.nextButtonText}>Next: Select Platforms</Text>
-          <Text style={styles.buttonArrow}>↗</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -111,41 +111,19 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
+    backgroundColor: '#0B0C10',
     paddingHorizontal: spacing.screenPadding,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xxl,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.xl,
     justifyContent: 'space-between',
   },
-  stepBadge: {
-    flexDirection: 'row',
+  stepIndicator: {
     alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: '#0E1017',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.sm,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.two26.flame,
-    marginRight: spacing.sm,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
   stepText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#A1A1AA',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
+    ...typography.badge,
+    color: '#64748B',
   },
   scrollContent: {
     alignItems: 'center',
@@ -153,147 +131,102 @@ const styles = StyleSheet.create({
   },
   mascotContainer: {
     alignItems: 'center',
-    marginVertical: spacing.sm,
+    marginVertical: spacing.md,
   },
   tabsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: spacing.lg,
-    backgroundColor: '#0E1017',
-    borderRadius: radii.xl,
-    padding: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: '#13151F',
+    borderRadius: radii.lg,
+    padding: spacing.xs,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: spacing.sm,
     alignItems: 'center',
-    borderRadius: radii.lg,
+    borderRadius: radii.md,
     borderWidth: 1,
     borderColor: 'transparent',
     marginHorizontal: 2,
   },
-  tabButtonSelected: {
-    backgroundColor: '#161922',
-    borderColor: colors.two26.flame,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
   tabButtonText: {
-    fontSize: 12,
-    color: '#71717A',
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
-  tabButtonTextSelected: {
-    color: '#FAF9F6',
-    fontWeight: '800',
+    ...typography.caption,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   detailCard: {
     width: '100%',
-    backgroundColor: '#0E1017',
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.xl,
     borderWidth: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
   },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: spacing.sm,
-  },
-  stateSubtitle: {
-    fontSize: 11,
-    fontWeight: '800',
-    color: '#71717A',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    fontFamily: 'monospace',
-    marginBottom: 2,
+    alignItems: 'center',
+    marginBottom: spacing.xs,
   },
   stateTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    letterSpacing: -0.5,
+    ...typography.h3,
   },
   rangeBadge: {
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: spacing.xs,
     borderRadius: radii.full,
-    borderWidth: 1,
   },
   rangeText: {
-    fontSize: 11,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.5,
+    ...typography.badge,
+  },
+  stateSubtitle: {
+    ...typography.bodyMedium,
+    color: '#CBD5E1',
+    fontWeight: '600',
+    marginBottom: spacing.sm,
   },
   stateDescription: {
-    fontSize: 13,
-    color: '#A1A1AA',
+    ...typography.bodySmall,
+    color: '#94A3B8',
     lineHeight: 20,
     marginBottom: spacing.md,
   },
   disclaimerBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderRadius: radii.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: radii.sm,
     padding: spacing.sm,
     borderLeftWidth: 2,
-    borderLeftColor: '#3F3F46',
+    borderLeftColor: '#64748B',
   },
   disclaimerText: {
-    fontSize: 11,
-    color: '#71717A',
+    ...typography.caption,
+    color: '#64748B',
     lineHeight: 16,
-    fontFamily: 'monospace',
   },
   navRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: spacing.sm,
   },
   backButton: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
   },
   backButtonText: {
-    fontSize: 14,
-    color: '#71717A',
-    fontWeight: '700',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   nextButton: {
-    backgroundColor: colors.two26.flame,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    borderRadius: radii.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 4,
+    borderRadius: radii.md,
   },
   nextButtonText: {
-    fontSize: 14,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    letterSpacing: 0.4,
-  },
-  buttonArrow: {
-    fontSize: 15,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    marginLeft: 6,
+    ...typography.bodyMedium,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });
-

@@ -1,17 +1,15 @@
 /**
  * RotBrain PlatformFilterTabs
- *
- * Boutique Two26 Studio-inspired tactile pill switcher.
- * Allows instant, spring-animated filtering between All, Instagram Reels, and YouTube Shorts.
- * Supports Two26 Light & Dark themes.
+ * Allows switching between All, Instagram Reels, and YouTube Shorts.
+ * Automatically adapts if user has only enabled one platform.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { DashboardFilter } from '../../../types/platform';
-import { useRotBrainStore } from '../../../store/useRotBrainStore';
-import { colors, getThemeColors } from '../../../theme/colors';
-import { radii, spacing } from '../../../theme/spacing';
+import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
+import { spacing, radii } from '../../../theme/spacing';
 
 interface PlatformFilterTabsProps {
   selectedFilter: DashboardFilter;
@@ -26,12 +24,11 @@ export const PlatformFilterTabs: React.FC<PlatformFilterTabsProps> = ({
   isInstagramEnabled,
   isYoutubeEnabled,
 }) => {
-  const { preferences } = useRotBrainStore();
-  const theme = getThemeColors(preferences.themePreference);
+  // If only one platform is enabled, only show that option
   const bothEnabled = isInstagramEnabled && isYoutubeEnabled;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
+    <View style={styles.container}>
       {bothEnabled && (
         <TouchableOpacity
           style={[
@@ -39,16 +36,15 @@ export const PlatformFilterTabs: React.FC<PlatformFilterTabsProps> = ({
             selectedFilter === 'all' && styles.tabActiveCombined,
           ]}
           onPress={() => onSelectFilter('all')}
-          activeOpacity={0.8}
+          activeOpacity={0.7}
         >
           <Text
             style={[
               styles.tabText,
-              { color: selectedFilter === 'all' ? '#FFFFFF' : theme.textSecondary },
               selectedFilter === 'all' && styles.tabTextActive,
             ]}
           >
-            COMBINED
+            Combined
           </Text>
         </TouchableOpacity>
       )}
@@ -60,17 +56,15 @@ export const PlatformFilterTabs: React.FC<PlatformFilterTabsProps> = ({
             selectedFilter === 'instagram' && styles.tabActiveInstagram,
           ]}
           onPress={() => onSelectFilter('instagram')}
-          activeOpacity={0.8}
+          activeOpacity={0.7}
         >
           <Text
             style={[
               styles.tabText,
-              selectedFilter === 'instagram'
-                ? { color: colors.platforms.instagram, fontWeight: '800' }
-                : { color: theme.textSecondary },
+              selectedFilter === 'instagram' && styles.tabTextActive,
             ]}
           >
-            📷 REELS
+            Instagram Reels
           </Text>
         </TouchableOpacity>
       )}
@@ -82,17 +76,15 @@ export const PlatformFilterTabs: React.FC<PlatformFilterTabsProps> = ({
             selectedFilter === 'youtube' && styles.tabActiveYoutube,
           ]}
           onPress={() => onSelectFilter('youtube')}
-          activeOpacity={0.8}
+          activeOpacity={0.7}
         >
           <Text
             style={[
               styles.tabText,
-              selectedFilter === 'youtube'
-                ? { color: colors.platforms.youtube, fontWeight: '800' }
-                : { color: theme.textSecondary },
+              selectedFilter === 'youtube' && styles.tabTextActive,
             ]}
           >
-            ▶️ SHORTS
+            YouTube Shorts
           </Text>
         </TouchableOpacity>
       )}
@@ -103,43 +95,41 @@ export const PlatformFilterTabs: React.FC<PlatformFilterTabsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderRadius: radii.full,
-    padding: 4,
+    backgroundColor: '#13151F',
+    borderRadius: radii.lg,
+    padding: spacing.xs,
     marginVertical: spacing.md,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   tab: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: spacing.sm,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: radii.full,
+    borderRadius: radii.md,
   },
   tabActiveCombined: {
-    backgroundColor: colors.two26.flame,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
+    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   tabActiveInstagram: {
-    backgroundColor: 'rgba(225, 48, 108, 0.12)',
+    backgroundColor: 'rgba(225, 48, 108, 0.25)',
     borderWidth: 1,
     borderColor: colors.platforms.instagram,
   },
   tabActiveYoutube: {
-    backgroundColor: 'rgba(255, 0, 0, 0.12)',
+    backgroundColor: 'rgba(255, 0, 0, 0.25)',
     borderWidth: 1,
     borderColor: colors.platforms.youtube,
   },
   tabText: {
-    fontSize: 10,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
+    ...typography.caption,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   tabTextActive: {
-    fontWeight: '800',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });
-

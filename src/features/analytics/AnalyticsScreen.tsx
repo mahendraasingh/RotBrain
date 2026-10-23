@@ -1,8 +1,7 @@
 /**
  * RotBrain Analytics Screen
  * Comprehensive behavioral analytics featuring daily, weekly, and monthly views,
- * 24-hour activity distribution, and session records with Two26 Studio styling.
- * Fully supports dynamic Two26 Light (Blush #F8EEE8) and Dark (Espresso #161413) themes.
+ * 24-hour activity distribution, and session records.
  */
 
 import React, { useState } from 'react';
@@ -11,15 +10,15 @@ import { useRotBrainStore } from '../../store/useRotBrainStore';
 import { Activity24HourChart } from './components/Activity24HourChart';
 import { SessionHistoryList } from './components/SessionHistoryList';
 import { DateTimeFormatter } from '../../utils/dateTimeFormatter';
-import { colors, getThemeColors } from '../../theme/colors';
+import { colors } from '../../theme/colors';
+import { typography } from '../../theme/typography';
 import { spacing, radii } from '../../theme/spacing';
 
 type TimeRangeTab = 'daily' | 'weekly' | 'monthly';
 
 export const AnalyticsScreen: React.FC = () => {
   const [selectedRange, setSelectedRange] = useState<TimeRangeTab>('daily');
-  const { todaySummary, recentSessions, preferences } = useRotBrainStore();
-  const themeColors = getThemeColors(preferences.themePreference);
+  const { todaySummary, recentSessions } = useRotBrainStore();
 
   const totalVideos =
     todaySummary.instagramConfirmedCount + todaySummary.youtubeConfirmedCount;
@@ -63,156 +62,72 @@ export const AnalyticsScreen: React.FC = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
       {/* Top Header */}
       <View style={styles.header}>
-        <View
-          style={[
-            styles.studioPill,
-            {
-              backgroundColor: themeColors.surface,
-              borderColor: themeColors.surfaceBorder,
-            },
-          ]}
-        >
-          <View style={styles.studioDot} />
-          <Text style={[styles.studioPillText, { color: themeColors.textSecondary }]}>
-            ANALYTICS // CHRONO METRICS
-          </Text>
-        </View>
-
-        {/* Dual Magnetic Heading */}
-        <View style={styles.dualHeadingWrap}>
-          <Text style={styles.dualTitleShadow}>Attention Telemetry</Text>
-          <Text style={[styles.dualTitleMain, { color: themeColors.textPrimary }]}>
-            Attention Telemetry
-          </Text>
-        </View>
-        <Text style={[styles.subtitle, { color: themeColors.textMuted }]}>
-          Empirical consumption auditing • Strict 24-Hour Timeline
+        <Text style={styles.title}>Analytics & Trends</Text>
+        <Text style={styles.subtitle}>
+          Behavioral insights • 24-Hour Timeline
         </Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Time Range Tabs (Daily, Weekly, Monthly) */}
-        <View
-          style={[
-            styles.tabsRow,
-            {
-              backgroundColor: themeColors.surface2,
-              borderColor: themeColors.surfaceBorder,
-            },
-          ]}
-        >
+        <View style={styles.tabsRow}>
           {(['daily', 'weekly', 'monthly'] as TimeRangeTab[]).map((tab) => {
             const isSelected = selectedRange === tab;
             return (
               <TouchableOpacity
                 key={tab}
-                style={[
-                  styles.rangeTab,
-                  isSelected && {
-                    backgroundColor: colors.two26.flame,
-                  },
-                ]}
+                style={[styles.rangeTab, isSelected && styles.rangeTabActive]}
                 onPress={() => setSelectedRange(tab)}
-                activeOpacity={0.7}
               >
-                <Text
-                  style={[
-                    styles.rangeTabText,
-                    {
-                      color: isSelected ? '#FFFFFF' : themeColors.textMuted,
-                    },
-                  ]}
-                >
-                  {tab.toUpperCase()}
+                <Text style={[styles.rangeTabText, isSelected && styles.rangeTabTextActive]}>
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
-        {/* High-Level Overview Metrics in Two26 Bento Grid */}
-        <View style={styles.bentoRow}>
-          <View
-            style={[
-              styles.bentoCard,
-              {
-                backgroundColor: themeColors.surface,
-                borderColor: themeColors.surfaceBorder,
-              },
-            ]}
-          >
-            <View style={styles.bentoHeaderRow}>
-              <Text style={[styles.kpiLabel, { color: themeColors.textMuted }]}>
-                TOTAL CONSUMED
-              </Text>
-              <Text style={[styles.bentoArrow, { color: themeColors.textMuted }]}>↗</Text>
-            </View>
-            <Text style={styles.kpiValueFlame}>{totalVideos}</Text>
-            <Text style={[styles.kpiSub, { color: themeColors.textSecondary }]}>
-              Shorts & Reels
-            </Text>
+        {/* High-Level Overview Metrics */}
+        <View style={styles.kpiContainer}>
+          <View style={styles.kpiItem}>
+            <Text style={styles.kpiLabel}>Total Watched</Text>
+            <Text style={styles.kpiValue}>{totalVideos}</Text>
+            <Text style={styles.kpiSub}>Shorts & Reels</Text>
           </View>
 
-          <View
-            style={[
-              styles.bentoCard,
-              {
-                backgroundColor: themeColors.surface,
-                borderColor: themeColors.surfaceBorder,
-              },
-            ]}
-          >
-            <View style={styles.bentoHeaderRow}>
-              <Text style={[styles.kpiLabel, { color: themeColors.textMuted }]}>
-                SCREEN TIME
-              </Text>
-              <Text style={[styles.bentoArrow, { color: themeColors.textMuted }]}>↗</Text>
-            </View>
-            <Text style={[styles.kpiValuePorcelain, { color: themeColors.textPrimary }]}>
+          <View style={styles.kpiDivider} />
+
+          <View style={styles.kpiItem}>
+            <Text style={styles.kpiLabel}>Total Screen Time</Text>
+            <Text style={[styles.kpiValue, { color: colors.fresh.base }]}>
               {DateTimeFormatter.formatDuration(totalDuration)}
             </Text>
-            <Text style={[styles.kpiSub, { color: themeColors.textSecondary }]}>
-              Active session time
-            </Text>
+            <Text style={styles.kpiSub}>Active viewing</Text>
           </View>
         </View>
 
-        {/* Detailed Averages Bento Card */}
-        <View
-          style={[
-            styles.averagesCard,
-            {
-              backgroundColor: themeColors.surface,
-              borderColor: themeColors.surfaceBorder,
-            },
-          ]}
-        >
-          <View style={[styles.avgRow, { borderBottomColor: themeColors.divider }]}>
-            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
-              Average Session Length
-            </Text>
-            <Text style={[styles.avgValue, { color: themeColors.textPrimary }]}>
+        {/* Detailed Averages Card */}
+        <View style={styles.averagesCard}>
+          <View style={styles.avgRow}>
+            <Text style={styles.avgLabel}>Average Session Length</Text>
+            <Text style={styles.avgValue}>
               {DateTimeFormatter.formatDuration(avgSessionSecs)}
             </Text>
           </View>
 
-          <View style={[styles.avgRow, { borderBottomColor: themeColors.divider }]}>
-            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
-              Longest Session
-            </Text>
-            <Text style={[styles.avgValue, { color: colors.two26.flame }]}>
+          <View style={styles.avgRow}>
+            <Text style={styles.avgLabel}>Longest Session</Text>
+            <Text style={[styles.avgValue, { color: colors.tired.light }]}>
               {DateTimeFormatter.formatDuration(longestSessionSecs)}
             </Text>
           </View>
 
-          <View style={[styles.avgRow, { borderBottomWidth: 0 }]}>
-            <Text style={[styles.avgLabel, { color: themeColors.textSecondary }]}>
-              Peak Activity Window
-            </Text>
-            <Text style={[styles.avgValue, { color: themeColors.textPrimary }]}>
+          <View style={styles.avgRow}>
+            <Text style={styles.avgLabel}>Peak Activity Window</Text>
+            <Text style={[styles.avgValue, { color: colors.primaryLight }]}>
               {peakWindow}
             </Text>
           </View>
@@ -222,40 +137,23 @@ export const AnalyticsScreen: React.FC = () => {
         <Activity24HourChart hourlyCounts={hourlyCounts} />
 
         {/* Platform Comparison */}
-        <View
-          style={[
-            styles.comparisonCard,
-            {
-              backgroundColor: themeColors.surface,
-              borderColor: themeColors.surfaceBorder,
-            },
-          ]}
-        >
-          <View style={styles.cardHeaderRow}>
-            <Text style={[styles.compHeading, { color: themeColors.textPrimary }]}>
-              CHANNEL ALLOCATION
-            </Text>
-            <Text style={[styles.compSub, { color: themeColors.textMuted }]}>
-              LIVE FEED SHARE
-            </Text>
-          </View>
+        <View style={styles.comparisonCard}>
+          <Text style={styles.compHeading}>Platform Consumption Share</Text>
 
           {/* Instagram Share */}
           <View style={styles.barItem}>
             <View style={styles.barHeader}>
-              <Text style={[styles.platformName, { color: themeColors.textPrimary }]}>
-                Instagram Reels
-              </Text>
-              <Text style={[styles.platformCount, { color: themeColors.textSecondary }]}>
-                {todaySummary.instagramConfirmedCount} reels
+              <Text style={styles.platformName}>Instagram Reels</Text>
+              <Text style={styles.platformCount}>
+                {todaySummary.instagramConfirmedCount} videos
               </Text>
             </View>
-            <View style={[styles.barBg, { backgroundColor: themeColors.surface2 }]}>
+            <View style={styles.barBg}>
               <View
                 style={[
                   styles.barFill,
                   {
-                    backgroundColor: '#E1306C',
+                    backgroundColor: colors.platforms.instagram,
                     width: `${
                       totalVideos > 0
                         ? Math.round(
@@ -272,19 +170,17 @@ export const AnalyticsScreen: React.FC = () => {
           {/* YouTube Share */}
           <View style={styles.barItem}>
             <View style={styles.barHeader}>
-              <Text style={[styles.platformName, { color: themeColors.textPrimary }]}>
-                YouTube Shorts
-              </Text>
-              <Text style={[styles.platformCount, { color: themeColors.textSecondary }]}>
-                {todaySummary.youtubeConfirmedCount} shorts
+              <Text style={styles.platformName}>YouTube Shorts</Text>
+              <Text style={styles.platformCount}>
+                {todaySummary.youtubeConfirmedCount} videos
               </Text>
             </View>
-            <View style={[styles.barBg, { backgroundColor: themeColors.surface2 }]}>
+            <View style={styles.barBg}>
               <View
                 style={[
                   styles.barFill,
                   {
-                    backgroundColor: colors.two26.flame,
+                    backgroundColor: colors.platforms.youtube,
                     width: `${
                       totalVideos > 0
                         ? Math.round(
@@ -309,173 +205,116 @@ export const AnalyticsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 48,
-    paddingHorizontal: spacing.lg,
+    backgroundColor: '#0B0C10',
+    paddingHorizontal: spacing.screenPadding,
   },
   header: {
-    marginBottom: spacing.md,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.sm,
   },
-  studioPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    marginBottom: spacing.xs,
-  },
-  studioDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.two26.flame,
-    marginRight: spacing.xs,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
-  studioPillText: {
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
-  },
-  dualHeadingWrap: {
-    position: 'relative',
-    marginVertical: 4,
-  },
-  dualTitleShadow: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    fontSize: 26,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    opacity: 0.25,
-    letterSpacing: -0.6,
-  },
-  dualTitleMain: {
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.6,
+  title: {
+    ...typography.h2,
+    color: '#F8FAFC',
   },
   subtitle: {
-    fontSize: 12,
-    marginTop: 2,
+    ...typography.caption,
+    color: '#94A3B8',
   },
   scrollContent: {
     paddingBottom: spacing.xxxl,
   },
   tabsRow: {
     flexDirection: 'row',
-    borderRadius: radii.xl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.lg,
     padding: 3,
-    marginVertical: spacing.sm,
+    marginVertical: spacing.md,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   rangeTab: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: spacing.xs,
     alignItems: 'center',
-    borderRadius: radii.lg,
+    borderRadius: radii.md,
+  },
+  rangeTabActive: {
+    backgroundColor: colors.primary,
   },
   rangeTabText: {
-    fontSize: 10,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
+    ...typography.caption,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
-  bentoRow: {
+  rangeTabTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  kpiContainer: {
     flexDirection: 'row',
-    gap: spacing.sm,
-    marginVertical: spacing.xs,
-  },
-  bentoCard: {
-    flex: 1,
-    borderRadius: radii.xxl,
-    padding: spacing.md,
-    borderWidth: 1,
-  },
-  bentoHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  bentoArrow: {
-    fontSize: 12,
-  },
-  kpiLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 1,
-  },
-  kpiValueFlame: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    letterSpacing: -0.8,
-    marginVertical: 2,
-    fontFamily: 'monospace',
-  },
-  kpiValuePorcelain: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    marginVertical: 2,
-    fontFamily: 'monospace',
-  },
-  kpiSub: {
-    fontSize: 11,
-  },
-  averagesCard: {
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.lg,
     marginVertical: spacing.xs,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  kpiItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  kpiDivider: {
+    width: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  kpiLabel: {
+    ...typography.caption,
+    color: '#94A3B8',
+    textTransform: 'uppercase',
+  },
+  kpiValue: {
+    ...typography.monoMedium,
+    color: '#F8FAFC',
+    marginVertical: 4,
+  },
+  kpiSub: {
+    ...typography.caption,
+    color: '#64748B',
+  },
+  averagesCard: {
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
+    padding: spacing.lg,
+    marginVertical: spacing.xs,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   avgRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
+    paddingVertical: spacing.xs,
   },
   avgLabel: {
-    fontSize: 12,
-    fontWeight: '600',
+    ...typography.bodySmall,
+    color: '#94A3B8',
   },
   avgValue: {
-    fontSize: 13,
-    fontWeight: '800',
-    fontFamily: 'monospace',
+    ...typography.bodySmall,
+    fontWeight: '700',
+    color: '#F8FAFC',
   },
   comparisonCard: {
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.lg,
     marginVertical: spacing.sm,
     borderWidth: 1,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   compHeading: {
-    fontSize: 11,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 1,
-  },
-  compSub: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
+    ...typography.h4,
+    color: '#F8FAFC',
+    marginBottom: spacing.md,
   },
   barItem: {
     marginBottom: spacing.md,
@@ -483,19 +322,20 @@ const styles = StyleSheet.create({
   barHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: spacing.xs,
   },
   platformName: {
-    fontSize: 12,
-    fontWeight: '700',
+    ...typography.caption,
+    color: '#CBD5E1',
+    fontWeight: '600',
   },
   platformCount: {
-    fontSize: 11,
-    fontFamily: 'monospace',
-    fontWeight: '700',
+    ...typography.caption,
+    color: '#94A3B8',
   },
   barBg: {
     height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: radii.full,
     overflow: 'hidden',
   },

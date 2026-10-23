@@ -2,16 +2,15 @@
  * RotBrain Activity24HourChart
  *
  * Visual distribution of short-video scrolling across 24 hours (00:00 to 23:00).
- * Strictly adheres to 24-hour time labels with zero AM/PM and zero fake data with Two26 Studio styling.
- * Supports dynamic Two26 Light / Dark themes.
+ * Strictly adheres to 24-hour time labels with zero AM/PM and zero fake data.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { DateTimeFormatter } from '../../../utils/dateTimeFormatter';
-import { colors, getThemeColors } from '../../../theme/colors';
+import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
-import { useRotBrainStore } from '../../../store/useRotBrainStore';
 
 interface Activity24HourChartProps {
   hourlyCounts?: number[]; // Array of 24 numbers (indices 0..23)
@@ -20,8 +19,6 @@ interface Activity24HourChartProps {
 export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
   hourlyCounts,
 }) => {
-  const { preferences } = useRotBrainStore();
-  const themeColors = getThemeColors(preferences.themePreference);
   const labels24 = DateTimeFormatter.get24HourLabels();
 
   // Initialize strictly with real data or 0s (no fake data)
@@ -34,40 +31,15 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
   const totalInChart = counts.reduce((acc, v) => acc + v, 0);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: themeColors.surface,
-          borderColor: themeColors.surfaceBorder,
-        },
-      ]}
-    >
+    <View style={styles.container}>
       <View style={styles.headerRow}>
-        <View style={styles.titleWrap}>
-          <Text style={[styles.title, { color: themeColors.textPrimary }]}>
-            CHRONO DISTRIBUTION
-          </Text>
-          <Text style={[styles.subtitle, { color: themeColors.textMuted }]}>
-            24-HOUR BEHAVIORAL SPECTRUM
-          </Text>
-        </View>
-        <Text style={[styles.arrowIcon, { color: themeColors.textMuted }]}>↗</Text>
+        <Text style={styles.title}>24-Hour Activity Distribution</Text>
+        <Text style={styles.subtitle}>Hour-by-hour timeline</Text>
       </View>
 
       {totalInChart === 0 && (
-        <View
-          style={[
-            styles.noDataBanner,
-            {
-              backgroundColor: themeColors.surface2,
-              borderColor: themeColors.surfaceBorder,
-            },
-          ]}
-        >
-          <Text style={[styles.noDataText, { color: themeColors.textMuted }]}>
-            [0 VIDEOS RECORDED ACROSS 24-HOUR SPECTRUM]
-          </Text>
+        <View style={styles.noDataBanner}>
+          <Text style={styles.noDataText}>0 videos recorded across all 24 hours</Text>
         </View>
       )}
 
@@ -83,19 +55,10 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
           return (
             <View key={hourLabel} style={styles.barColumn}>
               {/* Bar Value Tooltip if active */}
-              <Text style={[styles.barValue, { color: themeColors.textSecondary }]}>
-                {val > 0 ? val : ''}
-              </Text>
+              <Text style={styles.barValue}>{val > 0 ? val : ''}</Text>
 
               {/* Bar Track */}
-              <View
-                style={[
-                  styles.barTrack,
-                  {
-                    backgroundColor: themeColors.surface2,
-                  },
-                ]}
-              >
+              <View style={styles.barTrack}>
                 <View
                   style={[
                     styles.barFill,
@@ -103,29 +66,27 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
                       height: `${heightPercent}%`,
                       backgroundColor:
                         val >= 15
-                          ? colors.two26.flame
+                          ? colors.exhausted.light
                           : val >= 8
-                          ? colors.two26.flameGlow
-                          : colors.two26.primary20,
+                          ? colors.tired.light
+                          : colors.primaryLight,
                     },
                   ]}
                 />
               </View>
 
               {/* 24-Hour Label */}
-              <Text style={[styles.hourLabel, { color: themeColors.textMuted }]}>
-                {hourLabel.substring(0, 2)}h
-              </Text>
+              <Text style={styles.hourLabel}>{hourLabel.substring(0, 2)}h</Text>
             </View>
           );
         })}
       </ScrollView>
 
       {/* Axis Marker Summary */}
-      <View style={[styles.axisSummaryRow, { borderTopColor: themeColors.divider }]}>
-        <Text style={[styles.axisMarker, { color: themeColors.textMuted }]}>00:00 [NIGHT]</Text>
-        <Text style={[styles.axisMarker, { color: themeColors.textMuted }]}>12:00 [NOON]</Text>
-        <Text style={[styles.axisMarker, { color: themeColors.textMuted }]}>23:59 [END]</Text>
+      <View style={styles.axisSummaryRow}>
+        <Text style={styles.axisMarker}>00:00 (Night)</Text>
+        <Text style={styles.axisMarker}>12:00 (Noon)</Text>
+        <Text style={styles.axisMarker}>23:59 (End)</Text>
       </View>
     </View>
   );
@@ -133,49 +94,37 @@ export const Activity24HourChart: React.FC<Activity24HourChartProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.lg,
     marginVertical: spacing.md,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     marginBottom: spacing.md,
   },
-  titleWrap: {
-    flex: 1,
-  },
   title: {
-    fontSize: 11,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 1,
+    ...typography.h4,
+    color: '#F8FAFC',
+    marginBottom: 2,
   },
   subtitle: {
-    fontSize: 9,
-    fontWeight: '700',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
-    marginTop: 2,
-  },
-  arrowIcon: {
-    fontSize: 12,
+    ...typography.caption,
+    color: '#64748B',
   },
   noDataBanner: {
-    borderRadius: radii.md,
-    paddingVertical: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: radii.sm,
+    paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
     marginBottom: spacing.sm,
     alignItems: 'center',
-    borderWidth: 1,
   },
   noDataText: {
-    fontSize: 10,
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
-    fontWeight: '700',
+    ...typography.caption,
+    color: '#64748B',
+    fontSize: 11,
   },
   chartScroll: {
     paddingVertical: spacing.sm,
@@ -188,39 +137,42 @@ const styles = StyleSheet.create({
   },
   barValue: {
     fontSize: 10,
-    fontWeight: '800',
-    fontFamily: 'monospace',
+    color: '#CBD5E1',
+    fontWeight: '700',
     height: 14,
     marginBottom: 2,
   },
   barTrack: {
     width: 14,
     height: 90,
-    borderRadius: radii.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderRadius: 7,
     justifyContent: 'flex-end',
     overflow: 'hidden',
   },
   barFill: {
     width: '100%',
-    borderRadius: radii.sm,
+    borderRadius: 7,
   },
   hourLabel: {
+    ...typography.caption,
     fontSize: 9,
-    fontFamily: 'monospace',
+    color: '#64748B',
     marginTop: 6,
-    fontWeight: '700',
+    fontFamily: 'monospace',
   },
   axisSummaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    marginTop: spacing.xs,
+    borderTopColor: 'rgba(255, 255, 255, 0.06)',
+    paddingTop: spacing.xs,
+    marginTop: spacing.sm,
   },
   axisMarker: {
-    fontSize: 9,
+    ...typography.caption,
+    fontSize: 10,
+    color: '#475569',
     fontFamily: 'monospace',
-    letterSpacing: 0.8,
-    fontWeight: '700',
   },
 });

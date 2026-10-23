@@ -1,12 +1,13 @@
 /**
- * RotBrain Onboarding Screen 5: Ready to Begin
- * Summary of selections, granted permissions, and entering the Main Dashboard with Two26 Studio styling.
+ * RotBrain Onboarding Screen 6: Ready to Begin
+ * Summary of selections, granted permissions, and entering the Main Dashboard.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRotBrainStore } from '../../../store/useRotBrainStore';
 import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface ReadyToBeginScreenProps {
@@ -33,74 +34,71 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Step Indicator */}
-      <View style={styles.stepBadge}>
-        <View style={styles.dot} />
-        <Text style={styles.stepText}>STEP 05 // 05 — SYSTEM PRIMED</Text>
+      <View style={styles.stepIndicator}>
+        <Text style={styles.stepText}>STEP 5 OF 5 — SETUP COMPLETE</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Dual Magnetic Heading */}
-        <View style={styles.dualHeadingWrap}>
-          <Text style={styles.dualTitleShadow}>Ready to Begin</Text>
-          <Text style={styles.dualTitleMain}>Ready to Begin</Text>
-        </View>
-
+        <Text style={styles.heading}>You're All Set!</Text>
         <Text style={styles.subheading}>
-          Your biological attention telemetry profile has been initialized. You can reconfigure parameters anytime in Settings.
+          Here is a summary of your RotBrain monitoring profile. You can modify these preferences in Settings anytime.
         </Text>
 
         {/* Configuration Summary Card */}
         <View style={styles.summaryCard}>
-          <Text style={styles.sectionTitle}>ACTIVE CHANNELS</Text>
+          <Text style={styles.sectionTitle}>Tracked Platforms</Text>
 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Instagram Reels</Text>
-            <View style={[styles.statusChip, { borderColor: instagramTrackingEnabled ? colors.two26.primary : '#3F3F46' }]}>
-              <Text
-                style={[
-                  styles.statusChipText,
-                  { color: instagramTrackingEnabled ? colors.two26.primary : '#71717A' },
-                ]}
-              >
-                {instagramTrackingEnabled ? 'ONLINE' : 'OFFLINE'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>YouTube Shorts</Text>
-            <View style={[styles.statusChip, { borderColor: youtubeTrackingEnabled ? colors.two26.primary : '#3F3F46' }]}>
-              <Text
-                style={[
-                  styles.statusChipText,
-                  { color: youtubeTrackingEnabled ? colors.two26.primary : '#71717A' },
-                ]}
-              >
-                {youtubeTrackingEnabled ? 'ONLINE' : 'OFFLINE'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.divider} />
-
-          <Text style={styles.sectionTitle}>ATTENTION TELEMETRY</Text>
-
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Brain Degradation Thresholds</Text>
-            <Text style={styles.monoValue}>30 / 60 / 90+ Reels</Text>
-          </View>
-
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Floating Mobile HUD</Text>
-            <Text style={[styles.monoValue, { color: floatingBrainEnabled ? colors.two26.flame : '#71717A' }]}>
-              {floatingBrainEnabled ? 'ACTIVE [PINNED]' : 'OFF'}
+            <Text
+              style={[
+                styles.summaryValue,
+                { color: instagramTrackingEnabled ? colors.success : '#64748B' },
+              ]}
+            >
+              {instagramTrackingEnabled ? 'Active' : 'Disabled'}
             </Text>
           </View>
 
           <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>System Clock</Text>
-            <Text style={[styles.monoValue, { color: colors.two26.porcelain }]}>
-              STRICT 24H (HH:mm)
+            <Text style={styles.summaryLabel}>YouTube Shorts</Text>
+            <Text
+              style={[
+                styles.summaryValue,
+                { color: youtubeTrackingEnabled ? colors.success : '#64748B' },
+              ]}
+            >
+              {youtubeTrackingEnabled ? 'Active' : 'Disabled'}
+            </Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.sectionTitle}>Digital Wellbeing Features</Text>
+
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Brain Fatigue Milestones</Text>
+            <Text style={[styles.summaryValue, { color: colors.fresh.base }]}>
+              30 / 60 / 90+
+            </Text>
+          </View>
+
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Floating Brain Overlay</Text>
+            <Text
+              style={[
+                styles.summaryValue,
+                { color: floatingBrainEnabled ? colors.primaryLight : '#64748B' },
+              ]}
+            >
+              {floatingBrainEnabled ? 'Enabled' : 'Disabled'}
+            </Text>
+          </View>
+
+          <View style={styles.summaryRow}>
+            <Text style={styles.summaryLabel}>Display Clock</Text>
+            <Text style={[styles.summaryValue, { color: colors.fresh.light }]}>
+              Strict 24-Hour (HH:mm)
             </Text>
           </View>
         </View>
@@ -108,7 +106,7 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
         {/* Reassurance Banner */}
         <View style={styles.reassuranceBox}>
           <Text style={styles.reassuranceText}>
-            [LOCAL ENCLAVE] RotBrain operates locally on your hardware. Zero data collection, minimal battery footprint, absolute respect for your privacy.
+            🌿 RotBrain works offline with local SQLite storage. We respect your privacy, your device battery, and your attention.
           </Text>
         </View>
       </ScrollView>
@@ -116,12 +114,11 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
       {/* Navigation Buttons */}
       <View style={styles.navRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.launchButton} onPress={handleFinish} activeOpacity={0.85}>
-          <Text style={styles.launchButtonText}>Enter Dashboard</Text>
-          <Text style={styles.buttonArrow}>↗</Text>
+        <TouchableOpacity style={styles.launchButton} onPress={handleFinish}>
+          <Text style={styles.launchButtonText}>Enter Dashboard →</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,127 +128,64 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
+    backgroundColor: '#0B0C10',
     paddingHorizontal: spacing.screenPadding,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xxl,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.xl,
     justifyContent: 'space-between',
   },
-  stepBadge: {
-    flexDirection: 'row',
+  stepIndicator: {
     alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: '#0E1017',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.sm,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.two26.flame,
-    marginRight: spacing.sm,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
   stepText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#A1A1AA',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
+    ...typography.badge,
+    color: '#64748B',
   },
   scrollContent: {
     paddingBottom: spacing.lg,
   },
-  dualHeadingWrap: {
-    position: 'relative',
-    alignItems: 'center',
+  heading: {
+    ...typography.h2,
+    color: '#F8FAFC',
+    textAlign: 'center',
     marginBottom: spacing.xs,
   },
-  dualTitleShadow: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    fontSize: 26,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    opacity: 0.35,
-    textAlign: 'center',
-    letterSpacing: -0.6,
-  },
-  dualTitleMain: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#FAF9F6',
-    textAlign: 'center',
-    letterSpacing: -0.6,
-  },
   subheading: {
-    fontSize: 13,
-    color: '#A1A1AA',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
     textAlign: 'center',
-    lineHeight: 19,
+    lineHeight: 22,
     marginBottom: spacing.lg,
-    paddingHorizontal: spacing.sm,
   },
   summaryCard: {
-    backgroundColor: '#0E1017',
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.xl,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.md,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 14,
   },
   sectionTitle: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#71717A',
+    ...typography.caption,
+    color: '#64748B',
     marginBottom: spacing.sm,
     textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 7,
+    paddingVertical: spacing.xs,
   },
   summaryLabel: {
-    fontSize: 13,
-    color: '#D4D4D8',
-    fontWeight: '600',
+    ...typography.bodyMedium,
+    color: '#CBD5E1',
   },
-  statusChip: {
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: radii.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-  },
-  statusChipText: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
-  },
-  monoValue: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: '#FAF9F6',
-    fontFamily: 'monospace',
-    letterSpacing: 0.3,
+  summaryValue: {
+    ...typography.bodyMedium,
+    fontWeight: '700',
   },
   divider: {
     height: 1,
@@ -259,17 +193,16 @@ const styles = StyleSheet.create({
     marginVertical: spacing.md,
   },
   reassuranceBox: {
-    backgroundColor: '#0E1017',
-    borderRadius: radii.lg,
+    backgroundColor: 'rgba(139, 92, 246, 0.08)',
+    borderRadius: radii.md,
     padding: spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary,
   },
   reassuranceText: {
-    fontSize: 11,
-    color: '#71717A',
-    lineHeight: 16,
-    fontFamily: 'monospace',
+    ...typography.bodySmall,
+    color: '#CBD5E1',
+    lineHeight: 18,
   },
   navRow: {
     flexDirection: 'row',
@@ -282,34 +215,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   backButtonText: {
-    fontSize: 14,
-    color: '#71717A',
-    fontWeight: '700',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   launchButton: {
-    backgroundColor: colors.two26.flame,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    borderRadius: radii.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: colors.two26.flame,
+    borderRadius: radii.md,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
-    shadowRadius: 12,
+    shadowRadius: 8,
     elevation: 4,
   },
   launchButtonText: {
-    fontSize: 14,
-    color: '#FAF9F6',
+    ...typography.bodyMedium,
+    color: '#FFFFFF',
     fontWeight: '800',
-    letterSpacing: 0.4,
-  },
-  buttonArrow: {
-    fontSize: 15,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    marginLeft: 6,
   },
 });
-

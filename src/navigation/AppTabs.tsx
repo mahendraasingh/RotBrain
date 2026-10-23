@@ -1,7 +1,7 @@
 /**
  * RotBrain Bottom Tab Navigator
- * Boutique Two26 Studio-inspired bottom bar with Dashboard, Analytics, and Settings tabs,
- * and FloatingMobileCounter pinned to bottom-right for live feed tracking.
+ * Premium dark theme bottom bar with Dashboard, Analytics, and Settings tabs,
+ * with FloatingMobileCounter pinned to bottom-right for automatic live tracking.
  */
 
 import React from 'react';
@@ -11,30 +11,21 @@ import { MainDashboardScreen } from '../features/dashboard/MainDashboardScreen';
 import { AnalyticsScreen } from '../features/analytics/AnalyticsScreen';
 import { SettingsScreen } from '../features/settings/SettingsScreen';
 import { FloatingMobileCounter } from '../features/dashboard/components/FloatingMobileCounter';
-import { colors, getThemeColors } from '../theme/colors';
+import { colors } from '../theme/colors';
+import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
-import { useRotBrainStore } from '../store/useRotBrainStore';
 
 const Tab = createBottomTabNavigator();
 
 export const AppTabs: React.FC = () => {
-  const { preferences } = useRotBrainStore();
-  const themeColors = getThemeColors(preferences.themePreference);
-
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarStyle: [
-            styles.tabBar,
-            {
-              backgroundColor: themeColors.surface,
-              borderTopColor: themeColors.surfaceBorder,
-            },
-          ],
-          tabBarActiveTintColor: colors.two26.flame,
-          tabBarInactiveTintColor: themeColors.textMuted,
+          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: '#64748B',
           tabBarLabelStyle: styles.tabLabel,
         }}
       >
@@ -42,9 +33,9 @@ export const AppTabs: React.FC = () => {
           name="Dashboard"
           component={MainDashboardScreen}
           options={{
-            tabBarLabel: 'STUDIO',
+            tabBarLabel: 'Dashboard',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
                 🧠
               </Text>
             ),
@@ -55,9 +46,9 @@ export const AppTabs: React.FC = () => {
           name="Analytics"
           component={AnalyticsScreen}
           options={{
-            tabBarLabel: 'TRENDS',
+            tabBarLabel: 'Analytics',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
                 📊
               </Text>
             ),
@@ -68,9 +59,9 @@ export const AppTabs: React.FC = () => {
           name="Settings"
           component={SettingsScreen}
           options={{
-            tabBarLabel: 'PREFS',
+            tabBarLabel: 'Settings',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
                 ⚙️
               </Text>
             ),
@@ -87,23 +78,22 @@ export const AppTabs: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
+    backgroundColor: '#0B0C10',
   },
   tabBar: {
-    backgroundColor: '#080A0E',
+    backgroundColor: '#0F1017',
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
     borderTopWidth: 1,
-    height: 66,
+    height: 64,
     paddingBottom: spacing.sm,
-    paddingTop: 6,
+    paddingTop: spacing.xs,
   },
   tabLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    fontFamily: 'monospace',
-    letterSpacing: 0.8,
+    ...typography.caption,
+    fontSize: 11,
+    fontWeight: '600',
   },
   tabIcon: {
-    fontSize: 18,
+    fontSize: 20,
   },
 });

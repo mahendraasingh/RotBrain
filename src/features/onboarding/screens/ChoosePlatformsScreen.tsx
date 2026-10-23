@@ -1,12 +1,13 @@
 /**
- * RotBrain Onboarding Screen 3: Choose Your Platforms
- * Allows user to toggle Instagram Reels and YouTube Shorts independently with Two26 Studio styling.
+ * RotBrain Onboarding Screen 4: Choose Your Platforms
+ * Allows user to toggle Instagram Reels and YouTube Shorts independently.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRotBrainStore } from '../../../store/useRotBrainStore';
 import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface ChoosePlatformsScreenProps {
@@ -24,20 +25,14 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
   return (
     <View style={styles.container}>
       {/* Step Indicator */}
-      <View style={styles.stepBadge}>
-        <View style={styles.dot} />
-        <Text style={styles.stepText}>STEP 03 // 05 — TRACKED PLATFORMS</Text>
+      <View style={styles.stepIndicator}>
+        <Text style={styles.stepText}>STEP 3 OF 5 — TRACKED PLATFORMS</Text>
       </View>
 
       <View style={styles.content}>
-        {/* Dual Magnetic Heading */}
-        <View style={styles.dualHeadingWrap}>
-          <Text style={styles.dualTitleShadow}>Target Channels</Text>
-          <Text style={styles.dualTitleMain}>Target Channels</Text>
-        </View>
-
+        <Text style={styles.heading}>Select Platforms to Track</Text>
         <Text style={styles.subheading}>
-          Select the short-form feeds RotBrain monitors. Feeds can be toggled independently at any time.
+          Choose the feeds you want RotBrain to monitor. You can toggle each platform independently at any time.
         </Text>
 
         {/* Instagram Reels Card */}
@@ -54,12 +49,9 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
               <Text style={styles.platformIconText}>📷</Text>
             </View>
             <View style={styles.textContainer}>
-              <View style={styles.titleRow}>
-                <Text style={styles.platformTitle}>Instagram Reels</Text>
-                <Text style={styles.platformTag}>META // FEED</Text>
-              </View>
+              <Text style={styles.platformTitle}>Instagram Reels</Text>
               <Text style={styles.platformDescription}>
-                Monitors vertical Reels consumption & continuous scrolling intervals.
+                Tracks vertical Reels scrolling and viewing session intervals.
               </Text>
             </View>
             <View
@@ -87,12 +79,9 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
               <Text style={styles.platformIconText}>▶️</Text>
             </View>
             <View style={styles.textContainer}>
-              <View style={styles.titleRow}>
-                <Text style={styles.platformTitle}>YouTube Shorts</Text>
-                <Text style={styles.platformTag}>GOOGLE // FEED</Text>
-              </View>
+              <Text style={styles.platformTitle}>YouTube Shorts</Text>
               <Text style={styles.platformDescription}>
-                Audits short-form vertical playback within the native YouTube app.
+                Tracks short-form vertical video playback inside YouTube.
               </Text>
             </View>
             <View
@@ -106,10 +95,9 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
           </View>
         </TouchableOpacity>
 
-        {/* Privacy Callout */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            [LOCAL ENCLAVE] All telemetry is processed on-device. Zero video frames or personal data leave your phone.
+            🔒 Privacy First: All session data is stored locally on your device. We never capture your screen or transmit browsing history.
           </Text>
         </View>
       </View>
@@ -117,12 +105,11 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
       {/* Navigation Buttons */}
       <View style={styles.navRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.nextButton} onPress={onNext} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.nextButton} onPress={onNext}>
           <Text style={styles.nextButtonText}>Next: Permissions</Text>
-          <Text style={styles.buttonArrow}>↗</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -132,96 +119,52 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
+    backgroundColor: '#0B0C10',
     paddingHorizontal: spacing.screenPadding,
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xxl,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.xl,
     justifyContent: 'space-between',
   },
-  stepBadge: {
-    flexDirection: 'row',
+  stepIndicator: {
     alignItems: 'center',
-    alignSelf: 'center',
-    backgroundColor: '#0E1017',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 5,
-    borderRadius: radii.full,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.sm,
   },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.two26.flame,
-    marginRight: spacing.sm,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
-  },
   stepText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#A1A1AA',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
+    ...typography.badge,
+    color: '#64748B',
   },
   content: {
     flex: 1,
     justifyContent: 'center',
   },
-  dualHeadingWrap: {
-    position: 'relative',
-    alignItems: 'center',
+  heading: {
+    ...typography.h2,
+    color: '#F8FAFC',
+    textAlign: 'center',
     marginBottom: spacing.xs,
   },
-  dualTitleShadow: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    fontSize: 26,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    opacity: 0.35,
-    textAlign: 'center',
-    letterSpacing: -0.6,
-  },
-  dualTitleMain: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#FAF9F6',
-    textAlign: 'center',
-    letterSpacing: -0.6,
-  },
   subheading: {
-    fontSize: 13,
-    color: '#A1A1AA',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
     textAlign: 'center',
-    lineHeight: 19,
+    lineHeight: 22,
     marginBottom: spacing.xl,
-    paddingHorizontal: spacing.md,
   },
   platformCard: {
-    backgroundColor: '#0E1017',
-    borderRadius: radii.xxl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.xl,
     padding: spacing.lg,
     borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
-    marginBottom: spacing.md,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    marginBottom: spacing.lg,
   },
   platformCardActiveInstagram: {
-    borderColor: 'rgba(225, 48, 108, 0.5)',
-    backgroundColor: 'rgba(225, 48, 108, 0.06)',
+    borderColor: colors.platforms.instagram,
+    backgroundColor: 'rgba(225, 48, 108, 0.08)',
   },
   platformCardActiveYoutube: {
-    borderColor: 'rgba(255, 0, 0, 0.5)',
-    backgroundColor: 'rgba(255, 0, 0, 0.06)',
+    borderColor: colors.platforms.youtube,
+    backgroundColor: 'rgba(255, 0, 0, 0.08)',
   },
   platformHeader: {
     flexDirection: 'row',
@@ -231,9 +174,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(225, 48, 108, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(225, 48, 108, 0.3)',
+    backgroundColor: 'rgba(225, 48, 108, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -242,9 +183,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 0, 0, 0.15)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 0, 0, 0.3)',
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
@@ -256,66 +195,49 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: spacing.sm,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  platformTitle: {
+    ...typography.h4,
+    color: '#F8FAFC',
     marginBottom: 2,
   },
-  platformTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#FAF9F6',
-    letterSpacing: -0.3,
-  },
-  platformTag: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#71717A',
-    fontFamily: 'monospace',
-    letterSpacing: 0.5,
-  },
   platformDescription: {
-    fontSize: 12,
-    color: '#A1A1AA',
-    lineHeight: 17,
+    ...typography.bodySmall,
+    color: '#94A3B8',
+    lineHeight: 18,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     borderWidth: 2,
-    borderColor: '#3F3F46',
+    borderColor: '#475569',
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxActiveInstagram: {
-    backgroundColor: '#E1306C',
-    borderColor: '#E1306C',
+    backgroundColor: colors.platforms.instagram,
+    borderColor: colors.platforms.instagram,
   },
   checkboxActiveYoutube: {
-    backgroundColor: '#FF0000',
-    borderColor: '#FF0000',
+    backgroundColor: colors.platforms.youtube,
+    borderColor: colors.platforms.youtube,
   },
   checkmark: {
     color: '#FFFFFF',
-    fontWeight: '900',
-    fontSize: 13,
+    fontWeight: '800',
+    fontSize: 14,
   },
   infoBox: {
-    backgroundColor: '#0E1017',
-    borderRadius: radii.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: radii.md,
     padding: spacing.md,
-    marginTop: spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
+    marginTop: spacing.sm,
   },
   infoText: {
-    fontSize: 11,
-    color: '#71717A',
-    lineHeight: 16,
+    ...typography.caption,
+    color: '#64748B',
+    lineHeight: 18,
     textAlign: 'center',
-    fontFamily: 'monospace',
   },
   navRow: {
     flexDirection: 'row',
@@ -327,34 +249,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   backButtonText: {
-    fontSize: 14,
-    color: '#71717A',
-    fontWeight: '700',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   nextButton: {
-    backgroundColor: colors.two26.flame,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
-    borderRadius: radii.xl,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 4,
+    borderRadius: radii.md,
   },
   nextButtonText: {
-    fontSize: 14,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    letterSpacing: 0.4,
-  },
-  buttonArrow: {
-    fontSize: 15,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    marginLeft: 6,
+    ...typography.bodyMedium,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });
-

@@ -1,17 +1,13 @@
 /**
  * RotBrain Onboarding Screen 1: Welcome to RotBrain
- *
- * Boutique Two26 Studio-inspired entrance featuring:
- * - Dual-layer magnetic typography with flame shadow offset
- * - 3D responsive fresh brain mascot
- * - Editorial subtext
- * - High-craft flame primary button with diagonal arrow (↗)
+ * Visually striking introduction with animated fresh brain character and glowing aura.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BrainCharacterView } from '../../brain/BrainCharacterView';
 import { colors } from '../../../theme/colors';
+import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface WelcomeScreenProps {
@@ -24,21 +20,19 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
       {/* Top Brand Tag */}
       <View style={styles.brandRow}>
         <View style={styles.dot} />
-        <Text style={styles.brandText}>ROTBRAIN // ATTENTION INTELLIGENCE</Text>
+        <Text style={styles.brandText}>ROTBRAIN DIGITAL WELLBEING</Text>
       </View>
 
-      {/* Hero Character with 3D Interactive Tilt */}
+      {/* Hero Character */}
       <View style={styles.characterContainer}>
         <BrainCharacterView state="fresh" size={200} />
       </View>
 
-      {/* Main Copy with Dual Magnetic Heading */}
+      {/* Main Copy */}
       <View style={styles.contentContainer}>
-        <View style={styles.dualHeadingWrap}>
-          <Text style={styles.dualTitleShadow}>Reclaim Your Focus</Text>
-          <Text style={styles.dualTitleMain}>Reclaim Your Focus</Text>
-        </View>
-
+        <Text style={styles.title}>
+          Reclaim Your Focus from Endless Feeds
+        </Text>
         <Text style={styles.subtitle}>
           RotBrain brings visibility to your Instagram Reels and YouTube Shorts habits through an evolving brain character that responds to your scrolling.
         </Text>
@@ -52,7 +46,6 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
           activeOpacity={0.85}
         >
           <Text style={styles.primaryButtonText}>Begin Setup</Text>
-          <Text style={styles.buttonArrow}>↗</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -62,40 +55,34 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onNext }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
+    backgroundColor: '#0B0C10',
     paddingHorizontal: spacing.screenPadding,
     justifyContent: 'space-between',
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.xxl,
+    paddingTop: spacing.xxxl,
+    paddingBottom: spacing.xxxl,
   },
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'center',
-    backgroundColor: '#0E1017',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     paddingHorizontal: spacing.md,
-    paddingVertical: 5,
+    paddingVertical: spacing.xs,
     borderRadius: radii.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   dot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.two26.flame,
+    backgroundColor: colors.fresh.base,
     marginRight: spacing.sm,
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
   },
   brandText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: '#A1A1AA',
-    letterSpacing: 1.2,
-    fontFamily: 'monospace',
+    ...typography.badge,
+    color: '#94A3B8',
+    letterSpacing: 1,
   },
   characterContainer: {
     alignItems: 'center',
@@ -106,61 +93,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
   },
-  dualHeadingWrap: {
-    position: 'relative',
-    marginBottom: spacing.sm,
-  },
-  dualTitleShadow: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    fontSize: 28,
-    fontWeight: '900',
-    color: colors.two26.flame,
-    opacity: 0.4,
+  title: {
+    ...typography.h1,
+    color: '#F8FAFC',
     textAlign: 'center',
-    letterSpacing: -0.8,
-  },
-  dualTitleMain: {
-    fontSize: 28,
-    fontWeight: '900',
-    color: '#FAF9F6',
-    textAlign: 'center',
-    letterSpacing: -0.8,
+    marginBottom: spacing.md,
   },
   subtitle: {
-    fontSize: 13,
-    color: '#A1A1AA',
+    ...typography.bodyMedium,
+    color: '#94A3B8',
     textAlign: 'center',
-    lineHeight: 20,
-    marginTop: 4,
+    lineHeight: 22,
   },
   footer: {
-    paddingHorizontal: spacing.xs,
+    paddingHorizontal: spacing.md,
   },
   primaryButton: {
-    backgroundColor: colors.two26.flame,
+    backgroundColor: colors.primary,
     paddingVertical: spacing.lg,
-    borderRadius: radii.xl,
-    flexDirection: 'row',
+    borderRadius: radii.lg,
     alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.two26.flame,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 16,
-    elevation: 6,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 4,
   },
   primaryButtonText: {
-    fontSize: 15,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  buttonArrow: {
-    fontSize: 16,
-    color: '#FAF9F6',
-    fontWeight: '800',
-    marginLeft: 8,
+    ...typography.h4,
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });

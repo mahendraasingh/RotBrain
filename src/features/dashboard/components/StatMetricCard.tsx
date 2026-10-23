@@ -1,18 +1,12 @@
 /**
  * RotBrain StatMetricCard
- *
- * Boutique Two26 Studio-inspired tactile Bento tile:
- * - Technical monospace micro-metadata
- * - Diagonal studio arrow indicator (↗)
- * - Two26 Light & Dark theme responsive styling
- * - Velvet card chassis with corner rim glow
+ * Card for presenting metrics: confirmed count, duration, session count, etc.
  */
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useRotBrainStore } from '../../../store/useRotBrainStore';
-import { getThemeColors } from '../../../theme/colors';
-import { radii, spacing } from '../../../theme/spacing';
+import { typography } from '../../../theme/typography';
+import { spacing, radii } from '../../../theme/spacing';
 
 interface StatMetricCardProps {
   label: string;
@@ -27,32 +21,20 @@ export const StatMetricCard: React.FC<StatMetricCardProps> = ({
   value,
   subValue,
   icon,
-  accentColor = '#FF5400',
+  accentColor = '#8B5CF6',
 }) => {
-  const { preferences } = useRotBrainStore();
-  const theme = getThemeColors(preferences.themePreference);
-
   return (
-    <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
-      {/* Top Header Row with Icon and Two26 Diagonal Arrow */}
+    <View style={styles.card}>
       <View style={styles.topRow}>
-        <View style={styles.labelGroup}>
-          <Text style={styles.icon}>{icon}</Text>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>
-        </View>
-        <Text style={[styles.arrowIcon, { color: theme.textMuted }]}>↗</Text>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.icon}>{icon}</Text>
       </View>
 
-      {/* Primary Value */}
       <Text style={[styles.value, { color: accentColor }]}>{value}</Text>
 
-      {/* Sub-label description */}
       {subValue ? (
-        <Text style={[styles.subValue, { color: theme.textMuted }]}>{subValue}</Text>
+        <Text style={styles.subValue}>{subValue}</Text>
       ) : null}
-
-      {/* Corner Rim Glow Accent */}
-      <View style={[styles.cornerAccent, { backgroundColor: accentColor }]} />
     </View>
   );
 };
@@ -60,18 +42,13 @@ export const StatMetricCard: React.FC<StatMetricCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    borderRadius: radii.xl,
+    backgroundColor: '#13151F',
+    borderRadius: radii.lg,
     padding: spacing.md,
-    marginHorizontal: 4,
-    marginVertical: 4,
+    marginHorizontal: spacing.xs,
+    marginVertical: spacing.xs,
     borderWidth: 1,
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 3,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   topRow: {
     flexDirection: 'row',
@@ -79,43 +56,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xs,
   },
-  labelGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  label: {
+    ...typography.caption,
+    color: '#94A3B8',
+    textTransform: 'uppercase',
   },
   icon: {
-    fontSize: 13,
-    marginRight: 6,
-  },
-  label: {
-    fontSize: 9,
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    fontFamily: 'monospace',
-  },
-  arrowIcon: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 16,
   },
   value: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: -0.8,
-    fontFamily: 'monospace',
-    marginVertical: 2,
+    ...typography.h3,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   subValue: {
-    fontSize: 10,
-    letterSpacing: 0.2,
-  },
-  cornerAccent: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 24,
-    height: 2,
-    opacity: 0.6,
+    ...typography.caption,
+    color: '#64748B',
+    marginTop: 2,
   },
 });
-
