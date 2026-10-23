@@ -2,12 +2,13 @@
  * RotBrain FloatingMobileCounter
  *
  * Floating brain mascot widget positioned at the bottom right.
- * Features:
- * - Circular brain mascot bubble matching the user's reference photo
- * - Dynamic brain expression changing by count milestones (<30 fresh, 30+ tired, 60+ very tired, 90+ exhausted)
- * - Overlapping circular cream count badge at the bottom center showing live reel/short count
- * - Real-time bounce animation and floating "+1" pop badge when videos are viewed
- * - Tap to expand detailed session telemetry drawer
+ * Strict Visibility Logic:
+ * - Hidden during normal browsing/scrolling.
+ * - Appears ONLY when the user actively consumes Reels or Shorts AND has granted
+ *   permission for that platform (Instagram Reels or YouTube Shorts).
+ * - Smooth entrance and exit transitions when reels playback starts/stops.
+ * - Dynamic milestone brain expressions (<30 fresh, 30+ tired, 60+ very tired, 90+ exhausted).
+ * - Overlapping circular count badge matching reference photo.
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -48,6 +49,7 @@ export const FloatingMobileCounter: React.FC = () => {
   const {
     activeSession,
     todaySummary,
+    preferences,
   } = useRotBrainStore();
 
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -56,9 +58,45 @@ export const FloatingMobileCounter: React.FC = () => {
   const floatAnim = useRef(new Animated.Value(0)).current;
   const badgeAnim = useRef(new Animated.Value(0)).current;
 
-  const isInstagramActive = activeSession?.platform === 'instagram';
-  const isYoutubeActive = activeSession?.platform === 'youtube';
-  const isAnyActive = !!activeSession;
+  // Strict Permission & Active Session Gate:
+  // ONLY appears when reel/short is actively playing AND user has permitted that channel
+  const isInstagramPermitted = preferences.instagramTrackingEnabled;
+  const isYoutubePermitted = preferences.youtubeTrackingEnabled;
+  const isFloatingEnabled = preferences.floatingBrainEnabled;
+
+  const isInstagramActive =
+    activeSession?.platform === 'instagram' && isInstagramPermitted;
+  const isYoutubeActive =
+    activeSession?.platform === 'youtube' && isYoutubePermitted;
+
+  const isSessionActive =
+    isFloatingEnabled && (isInstagramActive || isYoutubeActive);
+
+  // Visibility entrance/exit animation
+  const visibilityAnim = useRef(new Animated.Value(isSessionActive ? 1 : 0)).current;
+  const [shouldRender, setShouldRender] = useState<boolean>(isSessionActive);
+
+  useEffect(() => {
+    if (isSessionActive) {
+      setShouldRender(true);
+      Animated.timing(visibilityAnim, {
+        toValue: 1,
+        duration: 350,
+        easing: Easing.out(Easing.back(1.4)),
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(visibilityAnim, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        setShouldRender(false);
+        setExpanded(false);
+      });
+    }
+  }, [isSessionActive, visibilityAnim]);
 
   // Track previous count to trigger auto count animation
   const prevCountRef = useRef<number>(0);
@@ -82,7 +120,7 @@ export const FloatingMobileCounter: React.FC = () => {
 
   // Pop animation when count increases
   useEffect(() => {
-    if (currentCount > prevCountRef.current) {
+    if (currentCount > prevCountRef.current && isSessionActive) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(countAnim, {
@@ -111,10 +149,11 @@ export const FloatingMobileCounter: React.FC = () => {
       ]).start();
     }
     prevCountRef.current = currentCount;
-  }, [currentCount, countAnim, badgeAnim]);
+  }, [currentCount, isSessionActive, countAnim, badgeAnim]);
 
   // Gentle floating breathing animation
   useEffect(() => {
+    if (!shouldRender) return;
     const floatLoop = Animated.loop(
       Animated.sequence([
         Animated.timing(floatAnim, {
@@ -133,11 +172,11 @@ export const FloatingMobileCounter: React.FC = () => {
     );
     floatLoop.start();
     return () => floatLoop.stop();
-  }, [floatAnim]);
+  }, [shouldRender, floatAnim]);
 
   // Continuous glow pulse when feed is actively detected
   useEffect(() => {
-    if (isAnyActive) {
+    if (isSessionActive) {
       const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -157,7 +196,12 @@ export const FloatingMobileCounter: React.FC = () => {
     } else {
       pulseAnim.setValue(1);
     }
-  }, [isAnyActive, pulseAnim]);
+  }, [isSessionActive, pulseAnim]);
+
+  // Do not render anything when not active
+  if (!shouldRender) {
+    return null;
+  }
 
   const activeColor = isInstagramActive
     ? colors.platforms.instagram
@@ -166,7 +210,16 @@ export const FloatingMobileCounter: React.FC = () => {
     : '#FF6B00';
 
   return (
-    <View style={styles.floatingWrapper} pointerEvents="box-none">
+    <Animated.View
+      style={[
+        styles.floatingWrapper,
+        {
+          opacity: visibilityAnim,
+          transform: [{ scale: visibilityAnim }],
+        },
+      ]}
+      pointerEvents="box-none"
+    >
       {/* Expanded Details Flyout */}
       {expanded && (
         <View style={styles.flyoutCard}>
@@ -175,7 +228,7 @@ export const FloatingMobileCounter: React.FC = () => {
               <View
                 style={[
                   styles.flyoutDot,
-                  { backgroundColor: isAnyActive ? activeColor : '#64748B' },
+                  { backgroundColor: activeColor },
                 ]}
               />
               <Text style={styles.flyoutTitle}>FEED TELEMETRY</Text>
@@ -195,9 +248,7 @@ export const FloatingMobileCounter: React.FC = () => {
           <Text style={styles.flyoutStatusText}>
             {isInstagramActive
               ? 'Instagram Reels • Active Feed'
-              : isYoutubeActive
-              ? 'YouTube Shorts • Active Feed'
-              : 'Standby • Auto-counts on Reel/Short view'}
+              : 'YouTube Shorts • Active Feed'}
           </Text>
 
           <View style={styles.flyoutDivider} />
@@ -268,8 +319,8 @@ export const FloatingMobileCounter: React.FC = () => {
             style={[
               styles.brainBubbleCircle,
               {
-                borderColor: isAnyActive ? activeColor : '#5C381E',
-                shadowColor: isAnyActive ? activeColor : '#000000',
+                borderColor: activeColor,
+                shadowColor: activeColor,
               },
             ]}
           >
@@ -293,17 +344,15 @@ export const FloatingMobileCounter: React.FC = () => {
           </Animated.View>
 
           {/* Active Platform Dot Indicator */}
-          {isAnyActive && (
-            <View
-              style={[
-                styles.platformDotRing,
-                { backgroundColor: activeColor },
-              ]}
-            />
-          )}
+          <View
+            style={[
+              styles.platformDotRing,
+              { backgroundColor: activeColor },
+            ]}
+          />
         </Animated.View>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 };
 
