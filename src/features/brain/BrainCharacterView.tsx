@@ -16,7 +16,7 @@ interface BrainCharacterViewProps {
   showAura?: boolean;
 }
 
-import brainFresh from '../../../assets/images/brain_fresh.jpg';
+import brainFresh from '../../../assets/images/freshBrain.png';
 import brainTired from '../../../assets/images/brain_tired.jpg';
 import brainVeryTired from '../../../assets/images/brain_very_tired.jpg';
 import brainExhausted from '../../../assets/images/brain_exhausted.jpg';
