@@ -55,11 +55,11 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Instagram Reels</Text>
-            <View style={[styles.statusChip, { borderColor: instagramTrackingEnabled ? colors.two26.emerald : '#3F3F46' }]}>
+            <View style={[styles.statusChip, { borderColor: instagramTrackingEnabled ? colors.two26.primary : '#3F3F46' }]}>
               <Text
                 style={[
                   styles.statusChipText,
-                  { color: instagramTrackingEnabled ? colors.two26.emerald : '#71717A' },
+                  { color: instagramTrackingEnabled ? colors.two26.primary : '#71717A' },
                 ]}
               >
                 {instagramTrackingEnabled ? 'ONLINE' : 'OFFLINE'}
@@ -69,11 +69,11 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
 
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>YouTube Shorts</Text>
-            <View style={[styles.statusChip, { borderColor: youtubeTrackingEnabled ? colors.two26.emerald : '#3F3F46' }]}>
+            <View style={[styles.statusChip, { borderColor: youtubeTrackingEnabled ? colors.two26.primary : '#3F3F46' }]}>
               <Text
                 style={[
                   styles.statusChipText,
-                  { color: youtubeTrackingEnabled ? colors.two26.emerald : '#71717A' },
+                  { color: youtubeTrackingEnabled ? colors.two26.primary : '#71717A' },
                 ]}
               >
                 {youtubeTrackingEnabled ? 'ONLINE' : 'OFFLINE'}

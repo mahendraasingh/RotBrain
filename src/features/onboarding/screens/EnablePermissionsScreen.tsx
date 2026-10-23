@@ -175,7 +175,7 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
             <View
               style={[
                 styles.statusDot,
-                { backgroundColor: isPermissionGranted ? colors.two26.emerald : colors.two26.flame },
+                { backgroundColor: isPermissionGranted ? colors.two26.primary : colors.two26.flame },
               ]}
             />
             <Text style={styles.statusText}>
@@ -436,9 +436,9 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   settingsButtonDone: {
-    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+    backgroundColor: 'rgba(255, 84, 0, 0.12)',
     borderWidth: 1,
-    borderColor: colors.two26.emerald,
+    borderColor: colors.two26.primary,
     shadowOpacity: 0,
   },
   settingsButtonText: {
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   settingsButtonTextDone: {
-    color: colors.two26.emerald,
+    color: colors.two26.primary,
   },
   securityBox: {
     backgroundColor: '#0E1017',

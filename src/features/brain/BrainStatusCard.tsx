@@ -2,19 +2,20 @@
  * RotBrain BrainStatusCard
  *
  * Boutique Two26 Studio-inspired flagship status card featuring:
+ * - Real Three.js WebGL 3D neural core with particle cloud and scroll-driven rotation
+ * - Interactive mode toggle between 3D WebGL Experience and 2D Mascot View
  * - Dual-layer magnetic typography with flame shadow offset
- * - 3D character viewing arena with reactive physics
- * - Technical monospace metadata stickers [PHASE • 01] [INDEX: LIVE]
- * - High-contrast progress gauge with flame glow tip
- * - Editorial wellbeing reflection
+ * - Strict Light Theme (#F8EEE8 / #FFFFFF) and Dark Theme (#161413 / #211E1D) support
+ * - Zero harsh green text or muddy backgrounds
  */
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { BrainCharacterView } from './BrainCharacterView';
+import { ThreeDBrainScene } from './ThreeDBrainScene';
 import { BrainStateManager } from './brainStateManager';
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
+import { useRotBrainStore } from '../../store/useRotBrainStore';
+import { colors, getThemeColors } from '../../theme/colors';
 import { spacing, radii } from '../../theme/spacing';
 
 interface BrainStatusCardProps {
@@ -24,23 +25,52 @@ interface BrainStatusCardProps {
 export const BrainStatusCard: React.FC<BrainStatusCardProps> = ({
   totalConfirmedCount,
 }) => {
+  const { preferences } = useRotBrainStore();
+  const theme = getThemeColors(preferences.themePreference);
+  const [viewMode, setViewMode] = useState<'3d' | 'mascot'>('3d');
+
   const progress = BrainStateManager.calculateProgress(totalConfirmedCount);
   const { stateInfo, percentageToNextMilestone, nextMilestone, countUntilNextMilestone } =
     progress;
 
   return (
-    <View style={styles.cardContainer}>
+    <View style={[styles.cardContainer, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
       {/* Top Editorial Studio Header */}
       <View style={styles.topMetadataRow}>
-        <View style={styles.studioTag}>
+        <View style={[styles.studioTag, { backgroundColor: theme.surface2, borderColor: theme.surfaceBorder }]}>
           <View style={styles.studioDot} />
-          <Text style={styles.studioTagText}>ROTBRAIN LABS — SENSING 01</Text>
+          <Text style={[styles.studioTagText, { color: theme.textSecondary }]}>
+            ROTBRAIN // ATTENTION SENSOR
+          </Text>
         </View>
 
-        <View style={styles.stateSticker}>
-          <Text style={[styles.stateStickerText, { color: stateInfo.accentColor }]}>
-            [{stateInfo.displayName.toUpperCase()}]
-          </Text>
+        {/* 3D vs Mascot Switcher */}
+        <View style={styles.viewModeRow}>
+          <TouchableOpacity
+            style={[
+              styles.modeTab,
+              viewMode === '3d' && styles.modeTabActive,
+            ]}
+            onPress={() => setViewMode('3d')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.modeTabText, viewMode === '3d' && styles.modeTabTextActive]}>
+              3D SCENE
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.modeTab,
+              viewMode === 'mascot' && styles.modeTabActive,
+            ]}
+            onPress={() => setViewMode('mascot')}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.modeTabText, viewMode === 'mascot' && styles.modeTabTextActive]}>
+              MASCOT
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -49,54 +79,58 @@ export const BrainStatusCard: React.FC<BrainStatusCardProps> = ({
         <Text style={[styles.dualHeadingShadow, { color: colors.two26.flame }]}>
           {stateInfo.displayName}
         </Text>
-        <Text style={styles.dualHeadingMain}>
+        <Text style={[styles.dualHeadingMain, { color: theme.textPrimary }]}>
           {stateInfo.displayName}
         </Text>
       </View>
 
-      <Text style={styles.statusSubtitle}>{stateInfo.subtitle}</Text>
+      <Text style={[styles.statusSubtitle, { color: theme.textMuted }]}>{stateInfo.subtitle}</Text>
 
-      {/* 3D Interactive Mascot Arena */}
+      {/* 3D Interactive Mascot / Three.js Arena */}
       <View style={styles.mascotArena}>
-        <BrainCharacterView state={progress.currentState} size={156} />
+        {viewMode === '3d' ? (
+          <ThreeDBrainScene state={progress.currentState} size={200} interactive={true} />
+        ) : (
+          <BrainCharacterView state={progress.currentState} size={156} />
+        )}
       </View>
 
       {/* Big Editorial Metric Section */}
-      <View style={styles.metricSection}>
+      <View style={[styles.metricSection, { backgroundColor: theme.surface2, borderColor: theme.surfaceBorder }]}>
         <View style={styles.countRow}>
-          <Text style={[styles.bigCountNumber, { color: '#FAF9F6' }]}>
+          <Text style={[styles.bigCountNumber, { color: theme.textPrimary }]}>
             {totalConfirmedCount}
           </Text>
           <View style={styles.countLabelCol}>
             <Text style={styles.countUnitText}>CONFIRMED</Text>
-            <Text style={styles.countSubUnit}>SHORTS & REELS</Text>
+            <Text style={[styles.countSubUnit, { color: theme.textMuted }]}>SHORTS & REELS</Text>
           </View>
         </View>
 
         {/* Two26 High-Craft Progress Track */}
         <View style={styles.progressContainer}>
           <View style={styles.progressHeader}>
-            <Text style={styles.progressLabel}>DOPAMINE FATIGUE METER</Text>
-            <Text style={[styles.progressPercent, { color: stateInfo.accentColor }]}>
+            <Text style={[styles.progressLabel, { color: theme.textSecondary }]}>DOPAMINE FATIGUE SPECTRUM</Text>
+            <Text style={[styles.progressPercent, { color: colors.two26.flame }]}>
               {percentageToNextMilestone}%
             </Text>
           </View>
 
-          <View style={styles.progressBarBackground}>
+          <View style={[styles.progressBarBackground, { backgroundColor: preferences.themePreference === 'light' ? '#EAE0DA' : 'rgba(255, 255, 255, 0.08)' }]}>
             <View
               style={[
                 styles.progressBarFill,
                 {
-                  width: `${Math.max(2, percentageToNextMilestone)}%`,
-                  backgroundColor: stateInfo.accentColor,
-                  shadowColor: stateInfo.accentColor,
+                  width: `${Math.max(3, percentageToNextMilestone)}%`,
+                  backgroundColor: colors.two26.flame,
+                  shadowColor: colors.two26.flame,
                 },
               ]}
             >
               <View
                 style={[
                   styles.progressBarGlowTip,
-                  { backgroundColor: colors.two26.flame },
+                  { backgroundColor: colors.two26.primary60 },
                 ]}
               />
             </View>
@@ -106,29 +140,29 @@ export const BrainStatusCard: React.FC<BrainStatusCardProps> = ({
         {/* Milestone Footer */}
         <View style={styles.milestoneFooter}>
           {nextMilestone !== null ? (
-            <Text style={styles.milestoneText}>
+            <Text style={[styles.milestoneText, { color: theme.textSecondary }]}>
               <Text style={{ color: colors.two26.flame, fontWeight: '800' }}>
                 {countUntilNextMilestone} videos
               </Text>{' '}
-              remaining until transition to{' '}
-              <Text style={{ color: '#FAF9F6', fontWeight: '700' }}>
+              remaining until milestone{' '}
+              <Text style={{ color: theme.textPrimary, fontWeight: '700' }}>
                 Level {nextMilestone}
               </Text>
             </Text>
           ) : (
-            <Text style={[styles.milestoneText, { color: colors.exhausted.light }]}>
-              ⚡ Daily threshold exceeded • Time to close feeds and restore focus.
+            <Text style={[styles.milestoneText, { color: colors.two26.flame }]}>
+              Daily threshold exceeded • Time to step away from feeds and restore attention.
             </Text>
           )}
         </View>
       </View>
 
       {/* Two26 Editorial Insight Callout */}
-      <View style={styles.editorialAdviceBox}>
+      <View style={[styles.editorialAdviceBox, { backgroundColor: preferences.themePreference === 'light' ? '#FFF5EE' : 'rgba(255, 84, 0, 0.08)', borderColor: 'rgba(255, 84, 0, 0.25)' }]}>
         <View style={styles.quotePill}>
           <Text style={styles.quotePillText}>EDITORIAL REFLECTION</Text>
         </View>
-        <Text style={styles.adviceQuote}>"{stateInfo.motivationalAdvice}"</Text>
+        <Text style={[styles.adviceQuote, { color: theme.textPrimary }]}>"{stateInfo.motivationalAdvice}"</Text>
       </View>
     </View>
   );
@@ -136,16 +170,14 @@ export const BrainStatusCard: React.FC<BrainStatusCardProps> = ({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#0E1017',
     borderRadius: 24,
     padding: spacing.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.6,
-    shadowRadius: 28,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 6,
     marginVertical: spacing.md,
     position: 'relative',
     overflow: 'hidden',
@@ -159,12 +191,10 @@ const styles = StyleSheet.create({
   studioTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: radii.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   studioDot: {
     width: 6,
@@ -176,23 +206,34 @@ const styles = StyleSheet.create({
   studioTagText: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#A1A1AA',
     letterSpacing: 0.8,
     fontFamily: 'monospace',
   },
-  stateSticker: {
+  viewModeRow: {
+    flexDirection: 'row',
     backgroundColor: 'rgba(255, 84, 0, 0.08)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 4,
+    borderRadius: radii.full,
+    padding: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255, 84, 0, 0.25)',
+    borderColor: 'rgba(255, 84, 0, 0.2)',
   },
-  stateStickerText: {
-    fontSize: 10,
+  modeTab: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: radii.full,
+  },
+  modeTabActive: {
+    backgroundColor: colors.two26.flame,
+  },
+  modeTabText: {
+    fontSize: 9,
     fontWeight: '800',
+    color: colors.two26.flame,
     fontFamily: 'monospace',
     letterSpacing: 0.5,
+  },
+  modeTabTextActive: {
+    color: '#FFFFFF',
   },
   headingWrapper: {
     position: 'relative',
@@ -206,31 +247,28 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: -0.8,
-    opacity: 0.45,
+    opacity: 0.35,
   },
   dualHeadingMain: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#FAF9F6',
     letterSpacing: -0.8,
   },
   statusSubtitle: {
-    ...typography.caption,
-    color: '#71717A',
+    fontSize: 12,
     marginBottom: spacing.sm,
     letterSpacing: 0.2,
   },
   mascotArena: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: spacing.md,
+    marginVertical: spacing.sm,
+    minHeight: 200,
   },
   metricSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
     borderRadius: radii.lg,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   countRow: {
     flexDirection: 'row',
@@ -256,7 +294,6 @@ const styles = StyleSheet.create({
   },
   countSubUnit: {
     fontSize: 10,
-    color: '#71717A',
     fontWeight: '600',
     letterSpacing: 0.6,
   },
@@ -272,7 +309,6 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 0.6,
   },
@@ -283,7 +319,6 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     height: 7,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: radii.full,
     overflow: 'hidden',
   },
@@ -291,9 +326,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: radii.full,
     position: 'relative',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
   },
   progressBarGlowTip: {
     position: 'absolute',
@@ -307,17 +339,14 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   milestoneText: {
-    ...typography.caption,
-    color: '#A1A1AA',
     fontSize: 11,
+    lineHeight: 16,
   },
   editorialAdviceBox: {
-    backgroundColor: 'rgba(255, 84, 0, 0.05)',
     borderRadius: radii.md,
     padding: spacing.md,
     marginTop: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 84, 0, 0.18)',
     position: 'relative',
   },
   quotePill: {
@@ -337,8 +366,8 @@ const styles = StyleSheet.create({
   },
   adviceQuote: {
     fontSize: 12,
-    color: '#FAF9F6',
     lineHeight: 18,
     fontStyle: 'italic',
   },
 });
+

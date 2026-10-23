@@ -1,102 +1,119 @@
 /**
  * RotBrain Design Tokens — Color Palette
- * Elevated Two26 Studio-inspired boutique creative aesthetic:
- * Bold International Flame (#FF5400), Blush Porcelain (#F9E2E1), Velvet Obsidian (#07080B).
+ * Strict Two26.studio editorial studio specification:
+ * - Primary: #FF5400 (Vivid Tangerine Orange)
+ * - Secondary / On-surface: #333333 (Soft Charcoal)
+ * - Neutral: #F8EEE8 (Warm Blush Studio Ambient)
+ * - Surface: #FFFFFF
+ * - Surface-2 / Tertiary: #FDF8F5 (Near-white Warm Surface)
+ * - Primary-60: #FF7A33
+ * - Primary-20: #FFD3BF (Soft Orange Chip Wash)
+ * Zero harsh green text or muddy backgrounds.
  */
 
 export const colors = {
-  // Two26 Signature Boutique Accents
+  // Two26 Signature Studio Palette
   two26: {
-    flame: '#FF5400',            // Signature Two26 International Flame
-    flameGlow: 'rgba(255, 84, 0, 0.40)',
+    primary: '#FF5400',          // Brand Energetic Accent
+    primary60: '#FF7A33',        // Hover / secondary accent
+    primary20: '#FFD3BF',        // Chip background / subtle wash
+    secondary: '#333333',        // Soft charcoal on-surface
+    neutral: '#F8EEE8',          // Ambient warm blush canvas (light)
+    surface: '#FFFFFF',          // Clean white surface
+    surface2: '#FDF8F5',         // Warm near-white card
+    onSurface: '#333333',
+    error: '#FF5400',
+
+    // Convenient aliases
+    flame: '#FF5400',
+    flameGlow: 'rgba(255, 84, 0, 0.35)',
     flameSoft: 'rgba(255, 84, 0, 0.12)',
-    porcelain: '#F9E2E1',        // Soft Blush Porcelain Cream
-    porcelainSoft: 'rgba(249, 226, 225, 0.15)',
-    blush: '#F9E2E1',
-    emerald: '#10B981',
-    noir: '#07080B',             // Deep Void Noir
-    card: '#0E1017',             // Velvet Studio Surface
-    cardElevated: '#141722',
-    border: 'rgba(255, 255, 255, 0.09)',
-    borderHover: 'rgba(255, 84, 0, 0.45)',
+    porcelain: '#FDF8F5',
+    blush: '#F8EEE8',
+    chip: '#FFD3BF',
+    charcoal: '#333333',
+    darkBg: '#161413',           // Two26 warm espresso dark canvas
+    darkSurface: '#211E1D',      // Two26 dark card
+    darkSurface2: '#2A2523',     // Two26 dark card elevated
   },
 
-  // Brand Base
-  primary: '#FF5400',            // Two26 Flame as primary brand tone
-  primaryViolet: '#8B5CF6',      // Electric Violet secondary
-  primaryLight: '#FF7A38',
-  primaryDark: '#CC4300',
-  
-  // Evolving Brain States (Curated with boutique intensity)
+  // Primary brand tone
+  primary: '#FF5400',
+  primaryLight: '#FF7A33',
+  primaryDark: '#D44400',
+
+  // Brain State Colors (Warm & Editorial — No harsh green)
   fresh: {
-    base: '#00F0FF',             // Radiant Neon Cyan
-    light: '#67E8F9',
-    dark: '#0891B2',
-    glow: 'rgba(0, 240, 255, 0.45)',
-    background: 'rgba(0, 240, 255, 0.12)',
-    badge: '#042A36',
+    base: '#FF5400',             // Studio Signature
+    light: '#FF7A33',
+    dark: '#CC4300',
+    glow: 'rgba(255, 84, 0, 0.35)',
+    background: 'rgba(255, 84, 0, 0.08)',
+    badge: '#FFD3BF',
   },
   tired: {
-    base: '#F59E0B',             // Warm Amber Gold
+    base: '#F59E0B',             // Warm Amber
     light: '#FBBF24',
     dark: '#D97706',
-    glow: 'rgba(245, 158, 11, 0.40)',
-    background: 'rgba(245, 158, 11, 0.12)',
-    badge: '#451A03',
+    glow: 'rgba(245, 158, 11, 0.35)',
+    background: 'rgba(245, 158, 11, 0.08)',
+    badge: '#FEF3C7',
   },
   veryTired: {
-    base: '#FF5400',             // Two26 Studio Signature Flame
-    light: '#FF7A38',
+    base: '#FF5400',             // Two26 Flame
+    light: '#FF7A33',
     dark: '#EA580C',
-    glow: 'rgba(255, 84, 0, 0.45)',
-    background: 'rgba(255, 84, 0, 0.14)',
-    badge: '#431407',
+    glow: 'rgba(255, 84, 0, 0.40)',
+    background: 'rgba(255, 84, 0, 0.12)',
+    badge: '#FFEDD5',
   },
   exhausted: {
-    base: '#EF4444',             // Crimson Burnout
-    light: '#F87171',
-    dark: '#DC2626',
-    glow: 'rgba(239, 68, 68, 0.45)',
-    background: 'rgba(239, 68, 68, 0.14)',
-    badge: '#450A0A',
+    base: '#DC2626',             // Crimson Alert
+    light: '#EF4444',
+    dark: '#B91C1C',
+    glow: 'rgba(220, 38, 38, 0.40)',
+    background: 'rgba(220, 38, 38, 0.12)',
+    badge: '#FEE2E2',
   },
 
-  // Dark Theme (Default Studio Mode)
-  dark: {
-    background: '#07080B',
-    surface: '#0E1017',
-    surfaceHover: '#161924',
-    surfaceBorder: 'rgba(255, 255, 255, 0.08)',
-    surfaceBorderHover: 'rgba(255, 84, 0, 0.45)',
-    glass: 'rgba(14, 16, 23, 0.85)',
-    glassBorder: 'rgba(255, 255, 255, 0.12)',
-
-    textPrimary: '#FAF9F6',
-    textSecondary: '#A1A1AA',
-    textMuted: '#71717A',
-    textInverse: '#07080B',
-
-    divider: 'rgba(255, 255, 255, 0.06)',
-    cardOverlay: 'rgba(0, 0, 0, 0.5)',
-  },
-
-  // Light Theme
+  // Two26 Light Theme (Authentic signature blush canvas)
   light: {
-    background: '#FAF9F6',
+    background: '#F8EEE8',
     surface: '#FFFFFF',
-    surfaceHover: '#F4F4F5',
-    surfaceBorder: '#E4E4E7',
-    surfaceBorderHover: 'rgba(255, 84, 0, 0.4)',
-    glass: 'rgba(255, 255, 255, 0.90)',
-    glassBorder: 'rgba(0, 0, 0, 0.08)',
-
-    textPrimary: '#09090B',
-    textSecondary: '#52525B',
-    textMuted: '#A1A1AA',
+    surface2: '#FDF8F5',
+    surfaceBorder: 'rgba(51, 51, 51, 0.08)',
+    surfaceBorderHover: 'rgba(255, 84, 0, 0.45)',
+    textPrimary: '#333333',
+    textSecondary: '#666666',
+    textMuted: '#888888',
     textInverse: '#FFFFFF',
+    divider: 'rgba(51, 51, 51, 0.06)',
+    cardOverlay: 'rgba(253, 248, 245, 0.85)',
+    chipBg: '#FFD3BF',
+    chipText: '#FF5400',
+    headerPillBg: '#FFFFFF',
+    headerPillBorder: 'rgba(51, 51, 51, 0.12)',
+    headerPillText: '#333333',
+  },
 
-    divider: '#E4E4E7',
-    cardOverlay: 'rgba(255, 255, 255, 0.6)',
+  // Two26 Dark Theme (Warm espresso studio dark)
+  dark: {
+    background: '#161413',
+    surface: '#211E1D',
+    surface2: '#2A2523',
+    surfaceBorder: 'rgba(255, 255, 255, 0.08)',
+    surfaceBorderHover: 'rgba(255, 84, 0, 0.5)',
+    textPrimary: '#FAF7F5',
+    textSecondary: '#A8A19C',
+    textMuted: '#78716C',
+    textInverse: '#161413',
+    divider: 'rgba(255, 255, 255, 0.06)',
+    cardOverlay: 'rgba(33, 30, 29, 0.85)',
+    chipBg: 'rgba(255, 84, 0, 0.18)',
+    chipText: '#FF5400',
+    headerPillBg: '#211E1D',
+    headerPillBorder: 'rgba(255, 255, 255, 0.10)',
+    headerPillText: '#FAF7F5',
   },
 
   // Platform Branding
@@ -108,11 +125,17 @@ export const colors = {
     combined: '#FF5400',
   },
 
-  // Status & Utility
-  success: '#10B981',
+  // Status & Utility (All aligned with Two26 — zero green text)
+  success: '#FF5400',
   warning: '#F59E0B',
-  danger: '#EF4444',
-  info: '#3B82F6',
+  danger: '#DC2626',
+  info: '#333333',
+};
+
+export const getThemeColors = (theme: 'light' | 'dark' | 'system' = 'dark') => {
+  if (theme === 'light') return colors.light;
+  return colors.dark;
 };
 
 export type ThemeColors = typeof colors.dark;
+

@@ -1,33 +1,40 @@
 /**
  * RotBrain Main Dashboard Screen
  *
- * Boutique Two26 Studio-inspired flagship dashboard:
+ * Flagship Two26 Studio-inspired creative dashboard:
+ * - Real Three.js 3D WebGL neural core & Mascot support
+ * - Dynamic Theme Switcher (Light: #F8EEE8 warm blush / Dark: #161413 espresso noir)
  * - Dual-layer magnetic typography in header with offset flame shadow
  * - Strict 24-hour technical timer pill with glowing pulse
  * - Smooth 3D scroll trigger animations with perspective card tilting
  * - Bento metric tiles with diagonal studio arrow indicators (↗)
- * - Porcelain & Flame platform split analytics
+ * - Porcelain & Flame cross-platform telemetry
+ * - Zero harsh green text or muddy backgrounds
  */
 
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Animated, RefreshControl, TouchableOpacity } from 'react-native';
 import { useRotBrainStore } from '../../store/useRotBrainStore';
 import { BrainStatusCard } from '../brain/BrainStatusCard';
 import { PlatformFilterTabs } from './components/PlatformFilterTabs';
 import { StatMetricCard } from './components/StatMetricCard';
 import { LiveSessionIndicator } from './components/LiveSessionIndicator';
 import { DateTimeFormatter } from '../../utils/dateTimeFormatter';
-import { colors } from '../../theme/colors';
+import { colors, getThemeColors } from '../../theme/colors';
 import { spacing, radii } from '../../theme/spacing';
 
 export const MainDashboardScreen: React.FC = () => {
   const {
     todaySummary,
     preferences,
+    updatePreferences,
     setDashboardFilter,
     getFilteredStats,
     checkLocalDayReset,
   } = useRotBrainStore();
+
+  const isLight = preferences.themePreference === 'light';
+  const theme = getThemeColors(preferences.themePreference);
 
   const [currentTime24, setCurrentTime24] = useState<string>(
     DateTimeFormatter.formatTimeSeconds24(new Date())
@@ -49,6 +56,10 @@ export const MainDashboardScreen: React.FC = () => {
     setRefreshing(true);
     await checkLocalDayReset();
     setRefreshing(false);
+  };
+
+  const toggleTheme = () => {
+    updatePreferences({ themePreference: isLight ? 'dark' : 'light' });
   };
 
   const filteredStats = getFilteredStats();
@@ -82,22 +93,42 @@ export const MainDashboardScreen: React.FC = () => {
   });
 
   return (
-    <View style={styles.container}>
-      {/* Two26 Studio Dual Header */}
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {/* Two26 Studio Dual Header with Theme Switcher & 24H Clock */}
       <View style={styles.topHeader}>
         <View style={styles.brandTitleBlock}>
           <View style={styles.dualHeaderWrap}>
             <Text style={styles.dualTitleShadow}>RotBrain</Text>
-            <Text style={styles.dualTitleMain}>RotBrain</Text>
+            <Text style={[styles.dualTitleMain, { color: theme.textPrimary }]}>RotBrain</Text>
           </View>
-          <Text style={styles.studioSubtitle}>DIGITAL ATTENTION STUDIO</Text>
+          <Text style={[styles.studioSubtitle, { color: theme.textMuted }]}>
+            TWO26 STUDIO // ATTENTION LABS
+          </Text>
         </View>
 
-        {/* 24-Hour Technical Timer Pill */}
-        <View style={styles.clockPill}>
-          <View style={styles.clockFlameDot} />
-          <Text style={styles.clockText}>{currentTime24}</Text>
-          <Text style={styles.clockBadge24}>24H</Text>
+        {/* Right Header Controls: Theme Toggle & 24-Hour Timer */}
+        <View style={styles.headerRightControls}>
+          {/* Light / Dark Mode Switcher */}
+          <TouchableOpacity
+            style={[
+              styles.themeTogglePill,
+              { backgroundColor: theme.surface, borderColor: theme.surfaceBorder },
+            ]}
+            onPress={toggleTheme}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.themeToggleIcon}>{isLight ? '☾' : '☀'}</Text>
+            <Text style={[styles.themeToggleText, { color: theme.textPrimary }]}>
+              {isLight ? 'DARK' : 'LIGHT'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* 24-Hour Technical Timer Pill */}
+          <View style={[styles.clockPill, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
+            <View style={styles.clockFlameDot} />
+            <Text style={[styles.clockText, { color: theme.textPrimary }]}>{currentTime24}</Text>
+            <Text style={styles.clockBadge24}>24H</Text>
+          </View>
         </View>
       </View>
 
@@ -145,10 +176,10 @@ export const MainDashboardScreen: React.FC = () => {
         <View style={styles.overviewHeader}>
           <View style={styles.overviewLabelRow}>
             <Text style={styles.overviewBullet}>●</Text>
-            <Text style={styles.overviewTitle}>Today's Telemetry</Text>
+            <Text style={[styles.overviewTitle, { color: theme.textPrimary }]}>Today's Telemetry</Text>
           </View>
-          <View style={styles.filterChip}>
-            <Text style={styles.filterChipText}>
+          <View style={[styles.filterChip, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
+            <Text style={[styles.filterChipText, { color: theme.textSecondary }]}>
               VIEW: {preferences.selectedDashboardFilter.toUpperCase()}
             </Text>
           </View>
@@ -164,7 +195,7 @@ export const MainDashboardScreen: React.FC = () => {
             <StatMetricCard
               label="Confirmed Reels"
               value={filteredStats.confirmedCount}
-              subValue={`Cap limit: ${preferences.dailyGoal}`}
+              subValue={`Target limit: ${preferences.dailyGoal}`}
               icon="🎬"
               accentColor={colors.two26.flame}
             />
@@ -172,19 +203,19 @@ export const MainDashboardScreen: React.FC = () => {
             <StatMetricCard
               label="Feed Duration"
               value={DateTimeFormatter.formatDuration(filteredStats.durationSeconds)}
-              subValue="Active screen session"
+              subValue="Active viewing interval"
               icon="⏱️"
-              accentColor={colors.fresh.base}
+              accentColor={colors.two26.primary60}
             />
           </View>
 
           <View style={styles.gridRow}>
             <StatMetricCard
-              label="App Launches"
+              label="Feed Launches"
               value={filteredStats.sessionCount}
-              subValue="Distinct feed entries"
+              subValue="Distinct app entries"
               icon="📱"
-              accentColor={colors.tired.light}
+              accentColor={colors.two26.primary}
             />
 
             <StatMetricCard
@@ -192,16 +223,16 @@ export const MainDashboardScreen: React.FC = () => {
               value={`${goalPercentage}%`}
               subValue={goalPercentage >= 100 ? 'Quota exceeded' : 'Healthy balance'}
               icon="🎯"
-              accentColor={goalPercentage >= 100 ? colors.danger : colors.success}
+              accentColor={goalPercentage >= 100 ? colors.danger : colors.two26.flame}
             />
           </View>
         </Animated.View>
 
         {/* Two26 Platform Breakdown Card */}
         {preferences.instagramTrackingEnabled && preferences.youtubeTrackingEnabled && (
-          <View style={styles.breakdownCard}>
+          <View style={[styles.breakdownCard, { backgroundColor: theme.surface, borderColor: theme.surfaceBorder }]}>
             <View style={styles.breakdownHeader}>
-              <Text style={styles.breakdownTitle}>CROSS-PLATFORM SPLIT</Text>
+              <Text style={[styles.breakdownTitle, { color: theme.textSecondary }]}>CROSS-PLATFORM ALLOCATION</Text>
               <Text style={styles.breakdownStudioTag}>[01 // TELEMETRY]</Text>
             </View>
 
@@ -210,28 +241,28 @@ export const MainDashboardScreen: React.FC = () => {
               <View style={styles.splitItem}>
                 <View style={styles.splitHeader}>
                   <Text style={[styles.splitDot, { color: colors.platforms.instagram }]}>●</Text>
-                  <Text style={styles.splitName}>Instagram Reels</Text>
+                  <Text style={[styles.splitName, { color: theme.textPrimary }]}>Instagram Reels</Text>
                 </View>
-                <Text style={styles.splitCount}>
-                  {todaySummary.instagramConfirmedCount} videos
+                <Text style={[styles.splitCount, { color: theme.textPrimary }]}>
+                  {todaySummary.instagramConfirmedCount} reels
                 </Text>
-                <Text style={styles.splitDuration}>
+                <Text style={[styles.splitDuration, { color: theme.textMuted }]}>
                   {DateTimeFormatter.formatDuration(todaySummary.instagramDurationSeconds)}
                 </Text>
               </View>
 
-              <View style={styles.splitDivider} />
+              <View style={[styles.splitDivider, { backgroundColor: theme.divider }]} />
 
               {/* YouTube Stat */}
               <View style={styles.splitItem}>
                 <View style={styles.splitHeader}>
                   <Text style={[styles.splitDot, { color: colors.platforms.youtube }]}>●</Text>
-                  <Text style={styles.splitName}>YouTube Shorts</Text>
+                  <Text style={[styles.splitName, { color: theme.textPrimary }]}>YouTube Shorts</Text>
                 </View>
-                <Text style={styles.splitCount}>
-                  {todaySummary.youtubeConfirmedCount} videos
+                <Text style={[styles.splitCount, { color: theme.textPrimary }]}>
+                  {todaySummary.youtubeConfirmedCount} shorts
                 </Text>
-                <Text style={styles.splitDuration}>
+                <Text style={[styles.splitDuration, { color: theme.textMuted }]}>
                   {DateTimeFormatter.formatDuration(todaySummary.youtubeDurationSeconds)}
                 </Text>
               </View>
@@ -246,7 +277,6 @@ export const MainDashboardScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#07080B',
     paddingHorizontal: spacing.screenPadding,
   },
   topHeader: {
@@ -275,26 +305,46 @@ const styles = StyleSheet.create({
   dualTitleMain: {
     fontSize: 26,
     fontWeight: '900',
-    color: '#FAF9F6',
     letterSpacing: -0.8,
   },
   studioSubtitle: {
     fontSize: 8,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 1.2,
     marginTop: 2,
   },
+  headerRightControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  themeTogglePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: radii.full,
+    borderWidth: 1,
+  },
+  themeToggleIcon: {
+    fontSize: 10,
+    color: colors.two26.flame,
+    marginRight: 4,
+  },
+  themeToggleText: {
+    fontSize: 9,
+    fontWeight: '800',
+    fontFamily: 'monospace',
+    letterSpacing: 0.5,
+  },
   clockPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0E1017',
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 5,
     borderRadius: radii.full,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   clockFlameDot: {
     width: 6,
@@ -309,7 +359,6 @@ const styles = StyleSheet.create({
   },
   clockText: {
     fontSize: 11,
-    color: '#FAF9F6',
     fontFamily: 'monospace',
     fontWeight: '700',
   },
@@ -342,20 +391,16 @@ const styles = StyleSheet.create({
   overviewTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#FAF9F6',
     letterSpacing: -0.3,
   },
   filterChip: {
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   filterChipText: {
     fontSize: 8,
-    color: '#A1A1AA',
     fontWeight: '800',
     fontFamily: 'monospace',
     letterSpacing: 0.6,
@@ -365,12 +410,10 @@ const styles = StyleSheet.create({
     marginHorizontal: -4,
   },
   breakdownCard: {
-    backgroundColor: '#0E1017',
     borderRadius: 20,
     padding: spacing.lg,
     marginTop: spacing.md,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   breakdownHeader: {
     flexDirection: 'row',
@@ -381,7 +424,6 @@ const styles = StyleSheet.create({
   breakdownTitle: {
     fontSize: 9,
     fontWeight: '800',
-    color: '#71717A',
     fontFamily: 'monospace',
     letterSpacing: 1,
   },
@@ -403,7 +445,6 @@ const styles = StyleSheet.create({
   splitDivider: {
     width: 1,
     height: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
   splitHeader: {
     flexDirection: 'row',
@@ -416,19 +457,17 @@ const styles = StyleSheet.create({
   },
   splitName: {
     fontSize: 12,
-    color: '#D4D4D8',
     fontWeight: '700',
   },
   splitCount: {
     fontSize: 18,
-    color: '#FAF9F6',
     fontWeight: '900',
     fontFamily: 'monospace',
   },
   splitDuration: {
     fontSize: 10,
-    color: '#71717A',
     marginTop: 2,
     fontFamily: 'monospace',
   },
 });
+
