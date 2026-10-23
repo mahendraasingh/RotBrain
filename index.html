@@ -82,6 +82,10 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #FF5400;
       }
+      /* Prevent any browser native green tints on switches or inputs */
+      input[type="checkbox"], input[type="radio"], [role="switch"] {
+        accent-color: #FF5400 !important;
+      }
     </style>
   </head>
   <body>
