@@ -93,7 +93,13 @@ export const AnalyticsScreen: React.FC = () => {
         {/* High-Level Overview Metrics */}
         <View style={styles.kpiContainer}>
           <View style={styles.kpiItem}>
-            <Text style={styles.kpiLabel}>Total Watched</Text>
+            <Text style={styles.kpiLabel}>
+              {selectedRange === 'daily'
+                ? 'Total Watched Today'
+                : selectedRange === 'weekly'
+                ? 'Weekly Total'
+                : 'Monthly Total'}
+            </Text>
             <Text style={styles.kpiValue}>{totalVideos}</Text>
             <Text style={styles.kpiSub}>Shorts & Reels</Text>
           </View>
@@ -101,11 +107,9 @@ export const AnalyticsScreen: React.FC = () => {
           <View style={styles.kpiDivider} />
 
           <View style={styles.kpiItem}>
-            <Text style={styles.kpiLabel}>Total Screen Time</Text>
-            <Text style={[styles.kpiValue, { color: colors.fresh.base }]}>
-              {DateTimeFormatter.formatDuration(totalDuration)}
-            </Text>
-            <Text style={styles.kpiSub}>Active viewing</Text>
+            <Text style={styles.kpiLabel}>Recorded Sessions</Text>
+            <Text style={styles.kpiValue}>{todaySummary.sessionCount}</Text>
+            <Text style={styles.kpiSub}>Feed check-ins</Text>
           </View>
         </View>
 
