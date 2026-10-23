@@ -12,6 +12,8 @@ export const colors = {
     flameSoft: 'rgba(255, 84, 0, 0.12)',
     porcelain: '#F9E2E1',        // Soft Blush Porcelain Cream
     porcelainSoft: 'rgba(249, 226, 225, 0.15)',
+    blush: '#F9E2E1',
+    emerald: '#10B981',
     noir: '#07080B',             // Deep Void Noir
     card: '#0E1017',             // Velvet Studio Surface
     cardElevated: '#141722',

@@ -20,6 +20,7 @@ export const radii = {
   md: 14,
   lg: 20,
   xl: 28,
+  xxl: 36,
   full: 9999,
 };
 
