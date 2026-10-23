@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="6dp">
+
+    <!-- Mobile Device Outer Shell -->
+    <LinearLayout
+        android:id="@+id/ll_mobile_container"
+        android:layout_width="54dp"
+        android:layout_height="88dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="3dp"
+        android:background="#DD13151F"
+        android:elevation="8dp">
+
+        <!-- Phone Top Notch/Speaker -->
+        <View
+            android:layout_width="16dp"
+            android:layout_height="3dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#475569" />
+
+        <!-- Screen area -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="#0B0C10">
+
+            <ImageView
+                android:id="@+id/iv_brain_mascot"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="Platform Indicator" />
+
+        </FrameLayout>
+
+        <!-- Live Count Badge on Screen -->
+        <TextView
+            android:id="@+id/tv_brain_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#F8FAFC"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:text="0" />
+
+        <!-- Home Indicator Bar -->
+        <View
+            android:layout_width="18dp"
+            android:layout_height="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_gravity="center_horizontal"
+            android:background="#64748B" />
+
+    </LinearLayout>
+
+    <!-- Floating Platform Badge in Top Right of Device -->
+    <TextView
+        android:id="@+id/tv_platform_badge"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="top|end"
+        android:gravity="center"
+        android:textSize="10sp"
+        android:textColor="#FFFFFF"
+        android:background="#E1306C"
+        android:text="0"
+        android:visibility="gone" />
+
+</FrameLayout>
