@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
+import com.rotbrain.overlay.FloatingBrainOverlayService
 
 /**
  * RotBrainAccessibilityService
@@ -11,6 +12,11 @@ import android.view.accessibility.AccessibilityNodeInfo
  * Provides short-video context detection inside supported platforms:
  * - Instagram Reels: com.instagram.android
  * - YouTube Shorts: com.google.android.youtube
+ *
+ * Strict Visibility Control:
+ * - During normal scrolling / other applications: floating overlay remains hidden.
+ * - ONLY when user starts using Reels or Shorts: overlay appears immediately with live counter.
+ * - When user exits Reels/Shorts: overlay hides immediately.
  *
  * Privacy and Policy Compliance:
  * - Legitimately detects only vertical scroll actions inside the Reels/Shorts container.
@@ -30,6 +36,7 @@ class RotBrainAccessibilityService : AccessibilityService() {
 
     private var lastScrollTimestamp: Long = 0
     private val scrollDebounceMs = 1200L // Prevent rapid double-trigger on single swipe
+    private var isCurrentlyInReelsOrShorts: Boolean = false
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
@@ -37,25 +44,47 @@ class RotBrainAccessibilityService : AccessibilityService() {
         val pkgName = event.packageName?.toString() ?: return
         val currentTime = System.currentTimeMillis()
 
-        if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+        // If user changed windows / switched apps outside target platforms, hide overlay
+        if (pkgName != PKG_INSTAGRAM && pkgName != PKG_YOUTUBE) {
+            if (isCurrentlyInReelsOrShorts) {
+                isCurrentlyInReelsOrShorts = false
+                updateOverlayVisibility(false)
+            }
+            return
+        }
+
+        val rootNode = event.source
+
+        // Determine if current view hierarchy is actively inside Reels or Shorts
+        val inReels = pkgName == PKG_INSTAGRAM && isInstagramReelsContext(rootNode)
+        val inShorts = pkgName == PKG_YOUTUBE && isYouTubeShortsContext(rootNode)
+        val inTargetFeed = inReels || inShorts
+
+        if (inTargetFeed != isCurrentlyInReelsOrShorts) {
+            isCurrentlyInReelsOrShorts = inTargetFeed
+            updateOverlayVisibility(inTargetFeed)
+        }
+
+        // On scroll events inside Reels / Shorts, record confirmed video view
+        if (event.eventType == AccessibilityEvent.TYPE_VIEW_SCROLLED && inTargetFeed) {
             if (currentTime - lastScrollTimestamp < scrollDebounceMs) {
                 return
             }
 
-            when (pkgName) {
-                PKG_INSTAGRAM -> {
-                    if (isInstagramReelsContext(event.source)) {
-                        lastScrollTimestamp = currentTime
-                        broadcastVideoEvent("instagram", 0.95f)
-                    }
-                }
-                PKG_YOUTUBE -> {
-                    if (isYouTubeShortsContext(event.source)) {
-                        lastScrollTimestamp = currentTime
-                        broadcastVideoEvent("youtube", 0.95f)
-                    }
-                }
-            }
+            lastScrollTimestamp = currentTime
+            val platform = if (inReels) "instagram" else "youtube"
+            broadcastVideoEvent(platform, 0.95f)
+        }
+    }
+
+    private fun updateOverlayVisibility(isVisible: Boolean) {
+        val intent = Intent(this, FloatingBrainOverlayService::class.java).apply {
+            putExtra(FloatingBrainOverlayService.EXTRA_VISIBLE, isVisible)
+        }
+        try {
+            startService(intent)
+        } catch (_: Exception) {
+            // Service not running or permissions not granted
         }
     }
 
@@ -70,8 +99,12 @@ class RotBrainAccessibilityService : AccessibilityService() {
 
             val clipsIndicators = rootNode.findAccessibilityNodeInfosByViewId("com.instagram.android:id/clips_video_container")
             return clipsIndicators.isNotEmpty()
+        } catch (_: Exception) {
+            return false
         } finally {
-            rootNode.recycle()
+            try {
+                rootNode.recycle()
+            } catch (_: Exception) {}
         }
     }
 
@@ -81,8 +114,12 @@ class RotBrainAccessibilityService : AccessibilityService() {
             // Check for Shorts video player container
             val shortsIndicators = rootNode.findAccessibilityNodeInfosByViewId("com.google.android.youtube:id/reel_player_view")
             return shortsIndicators.isNotEmpty()
+        } catch (_: Exception) {
+            return false
         } finally {
-            rootNode.recycle()
+            try {
+                rootNode.recycle()
+            } catch (_: Exception) {}
         }
     }
 
@@ -96,6 +133,9 @@ class RotBrainAccessibilityService : AccessibilityService() {
     }
 
     override fun onInterrupt() {
-        // Handle interruption or accessibility state change
+        if (isCurrentlyInReelsOrShorts) {
+            isCurrentlyInReelsOrShorts = false
+            updateOverlayVisibility(false)
+        }
     }
 }

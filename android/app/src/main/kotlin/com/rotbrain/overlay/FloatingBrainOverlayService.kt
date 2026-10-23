@@ -16,6 +16,11 @@ import com.rotbrain.R
  *
  * Implements a native Android WindowManager draggable overlay displaying
  * the live RotBrain mascot, current daily count, and tap-to-open interaction.
+ *
+ * Strict Visibility Logic:
+ * - Hidden by default during normal phone scrolling and app usage.
+ * - Becomes visible ONLY when user starts using Reels or Shorts with permission.
+ * - Hides immediately when exiting Reels/Shorts.
  */
 class FloatingBrainOverlayService : Service() {
 
@@ -25,8 +30,10 @@ class FloatingBrainOverlayService : Service() {
 
     companion object {
         const val ACTION_UPDATE_COUNT = "com.rotbrain.ACTION_UPDATE_COUNT"
+        const val ACTION_SET_VISIBILITY = "com.rotbrain.ACTION_SET_VISIBILITY"
         const val EXTRA_COUNT = "extra_count"
         const val EXTRA_STATE = "extra_state"
+        const val EXTRA_VISIBLE = "extra_visible"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -47,6 +54,9 @@ class FloatingBrainOverlayService : Service() {
     private fun setupOverlayView() {
         val inflater = LayoutInflater.from(this)
         overlayView = inflater.inflate(R.layout.view_floating_brain, null)
+
+        // Hidden by default during normal scrolling
+        overlayView?.visibility = View.GONE
 
         val layoutFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -118,22 +128,32 @@ class FloatingBrainOverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val count = intent?.getIntExtra(EXTRA_COUNT, 0) ?: 0
-        val state = intent?.getStringExtra(EXTRA_STATE) ?: "fresh"
+        if (intent == null) return START_STICKY
 
-        val countTextView = overlayView?.findViewById<TextView>(R.id.tv_brain_count)
-        val brainImageView = overlayView?.findViewById<ImageView>(R.id.iv_brain_mascot)
-
-        countTextView?.text = count.toString()
-
-        // Update brain drawable matching state without flicker
-        val drawableRes = when (state) {
-            "fresh" -> R.drawable.ic_brain_fresh
-            "tired" -> R.drawable.ic_brain_tired
-            "very_tired" -> R.drawable.ic_brain_very_tired
-            else -> R.drawable.ic_brain_exhausted
+        // Handle explicit visibility command
+        if (intent.hasExtra(EXTRA_VISIBLE)) {
+            val isVisible = intent.getBooleanExtra(EXTRA_VISIBLE, false)
+            overlayView?.visibility = if (isVisible) View.VISIBLE else View.GONE
         }
-        brainImageView?.setImageResource(drawableRes)
+
+        val count = intent.getIntExtra(EXTRA_COUNT, -1)
+        val state = intent.getStringExtra(EXTRA_STATE)
+
+        if (count >= 0) {
+            val countTextView = overlayView?.findViewById<TextView>(R.id.tv_brain_count)
+            countTextView?.text = count.toString()
+        }
+
+        if (state != null) {
+            val brainImageView = overlayView?.findViewById<ImageView>(R.id.iv_brain_mascot)
+            val drawableRes = when (state) {
+                "fresh" -> R.drawable.ic_brain_fresh
+                "tired" -> R.drawable.ic_brain_tired
+                "very_tired" -> R.drawable.ic_brain_very_tired
+                else -> R.drawable.ic_brain_exhausted
+            }
+            brainImageView?.setImageResource(drawableRes)
+        }
 
         return START_STICKY
     }
