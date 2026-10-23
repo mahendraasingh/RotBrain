@@ -2,7 +2,7 @@
  * RotBrain Onboarding Screen 4: Genuine App Tracking Permissions
  *
  * Implements genuine OS permission request and settings redirection flow
- * for Instagram Reels and YouTube Shorts tracking.
+ * for Instagram Reels and YouTube Shorts tracking with Two26 Studio styling.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -19,7 +19,6 @@ import {
 import { useRotBrainStore } from '../../../store/useRotBrainStore';
 import { PlatformMonitoring } from '../../monitoring/platformMonitoringAdapter';
 import { colors } from '../../../theme/colors';
-import { typography } from '../../../theme/typography';
 import { spacing, radii } from '../../../theme/spacing';
 
 interface EnablePermissionsScreenProps {
@@ -109,34 +108,40 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
   return (
     <View style={styles.container}>
       {/* Step Indicator */}
-      <View style={styles.stepIndicator}>
-        <Text style={styles.stepText}>STEP 4 OF 5 — SYSTEM PERMISSIONS</Text>
+      <View style={styles.stepBadge}>
+        <View style={styles.dot} />
+        <Text style={styles.stepText}>STEP 04 // 05 — OS AUTHORIZATION</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>Allow App Tracking</Text>
+        {/* Dual Magnetic Heading */}
+        <View style={styles.dualHeadingWrap}>
+          <Text style={styles.dualTitleShadow}>Authorize Sensor</Text>
+          <Text style={styles.dualTitleMain}>Authorize Sensor</Text>
+        </View>
+
         <Text style={styles.subheading}>
-          Just like a camera or location prompt, RotBrain requires device authorization to detect short videos in your selected apps.
+          Similar to camera or microphone access, RotBrain requires device-level authorization to detect short videos in your active feeds.
         </Text>
 
         {/* Selected Apps Badge Row */}
         <View style={styles.trackedAppsContainer}>
-          <Text style={styles.trackedAppsTitle}>Configured Targets:</Text>
+          <Text style={styles.trackedAppsTitle}>ACTIVE TARGETS:</Text>
           <View style={styles.tagsRow}>
             {instagramTrackingEnabled && (
-              <View style={[styles.appTag, { borderColor: colors.platforms.instagram }]}>
+              <View style={[styles.appTag, { borderColor: 'rgba(225, 48, 108, 0.4)' }]}>
                 <Text style={styles.tagIcon}>📷</Text>
                 <Text style={styles.tagText}>Instagram Reels</Text>
               </View>
             )}
             {youtubeTrackingEnabled && (
-              <View style={[styles.appTag, { borderColor: colors.platforms.youtube }]}>
+              <View style={[styles.appTag, { borderColor: 'rgba(255, 0, 0, 0.4)' }]}>
                 <Text style={styles.tagIcon}>▶️</Text>
                 <Text style={styles.tagText}>YouTube Shorts</Text>
               </View>
             )}
             {!instagramTrackingEnabled && !youtubeTrackingEnabled && (
-              <View style={[styles.appTag, { borderColor: '#64748B' }]}>
+              <View style={[styles.appTag, { borderColor: 'rgba(255, 255, 255, 0.1)' }]}>
                 <Text style={styles.tagText}>All Short Video Apps</Text>
               </View>
             )}
@@ -150,37 +155,39 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
               <Text style={styles.systemIcon}>⚙️</Text>
             </View>
             <View style={styles.permHeaderText}>
-              <Text style={styles.permTitle}>System Access Required</Text>
+              <Text style={styles.permTitle}>Hardware Telemetry Access</Text>
               <Text style={styles.permSubtitle}>
                 {Platform.OS === 'android'
-                  ? 'Usage Access & Accessibility Service'
+                  ? 'Usage Stats & Accessibility Service'
                   : Platform.OS === 'ios'
-                  ? 'Screen Time Authorization'
-                  : 'System Activity & Focus Awareness'}
+                  ? 'Screen Time Framework'
+                  : 'System Focus & Scroll Watcher'}
               </Text>
             </View>
           </View>
 
           <Text style={styles.permExplanation}>
-            Operating systems require you to toggle authorization in Settings so RotBrain can detect when Instagram or YouTube is playing short videos.
+            Your operating system requires explicit toggle in Settings so RotBrain can detect when reels/shorts playback begins.
           </Text>
 
+          {/* Status Box */}
           <View style={styles.statusBox}>
             <View
               style={[
                 styles.statusDot,
-                { backgroundColor: isPermissionGranted ? colors.success : colors.warning },
+                { backgroundColor: isPermissionGranted ? colors.two26.emerald : colors.two26.flame },
               ]}
             />
             <Text style={styles.statusText}>
               {isVerifying
-                ? 'Verifying system permissions...'
+                ? 'VERIFYING OS PRIVILEGES...'
                 : isPermissionGranted
-                ? 'Permission Granted — Ready to Detect'
-                : 'Action Required: Grant in Settings'}
+                ? 'GRANTED // LIVE SENSOR ACTIVE'
+                : 'ACTION REQUIRED // AUTHORIZE IN SETTINGS'}
             </Text>
           </View>
 
+          {/* Open Settings Button */}
           <TouchableOpacity
             style={[
               styles.settingsButton,
@@ -189,19 +196,19 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
             onPress={handleOpenSettings}
             activeOpacity={0.8}
           >
-            <Text style={styles.settingsButtonText}>
+            <Text style={[styles.settingsButtonText, isPermissionGranted && styles.settingsButtonTextDone]}>
               {isPermissionGranted
-                ? '✓ Permission Granted (Re-open Settings)'
-                : '📱 Open System Settings & Allow'}
+                ? '✓ SENSOR AUTHORIZED (RE-OPEN SETTINGS)'
+                : 'OPEN SYSTEM SETTINGS & ALLOW ↗'}
             </Text>
           </TouchableOpacity>
         </View>
 
         {/* Privacy & Safety Note */}
         <View style={styles.securityBox}>
-          <Text style={styles.securityTitle}>🔒 Strictly Offline & Private</Text>
+          <Text style={styles.securityTitle}>[OFFLINE ENCLAVE // ZERO SURVEILLANCE]</Text>
           <Text style={styles.securityText}>
-            RotBrain never inspects screen text, private chats, or passwords. It only detects vertical scroll events in Reels and Shorts feeds.
+            RotBrain never inspects screen content, chats, or keystrokes. It exclusively counts vertical reel swipe transitions.
           </Text>
         </View>
       </ScrollView>
@@ -209,7 +216,7 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
       {/* Navigation Buttons */}
       <View style={styles.navRow}>
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={styles.backButtonText}>← Back</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -221,8 +228,9 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
           activeOpacity={0.85}
         >
           <Text style={styles.nextButtonText}>
-            {isPermissionGranted ? 'Review & Complete →' : 'Allow in Settings to Proceed'}
+            {isPermissionGranted ? 'Review & Complete' : 'Allow in Settings to Proceed'}
           </Text>
+          <Text style={styles.buttonArrow}>↗</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -232,45 +240,87 @@ export const EnablePermissionsScreen: React.FC<EnablePermissionsScreenProps> = (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: '#07080B',
     paddingHorizontal: spacing.screenPadding,
-    paddingTop: spacing.xxxl,
-    paddingBottom: spacing.xl,
+    paddingTop: spacing.xxl,
+    paddingBottom: spacing.xxl,
     justifyContent: 'space-between',
   },
-  stepIndicator: {
+  stepBadge: {
+    flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#0E1017',
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+    borderRadius: radii.full,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.sm,
   },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.two26.flame,
+    marginRight: spacing.sm,
+    shadowColor: colors.two26.flame,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
   stepText: {
-    ...typography.badge,
-    color: '#64748B',
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#A1A1AA',
+    letterSpacing: 1.2,
+    fontFamily: 'monospace',
   },
   scrollContent: {
     paddingBottom: spacing.lg,
   },
-  heading: {
-    ...typography.h2,
-    color: '#F8FAFC',
-    textAlign: 'center',
+  dualHeadingWrap: {
+    position: 'relative',
+    alignItems: 'center',
     marginBottom: spacing.xs,
   },
-  subheading: {
-    ...typography.bodyMedium,
-    color: '#94A3B8',
+  dualTitleShadow: {
+    position: 'absolute',
+    top: 2,
+    left: 2,
+    fontSize: 26,
+    fontWeight: '900',
+    color: colors.two26.flame,
+    opacity: 0.35,
     textAlign: 'center',
-    lineHeight: 22,
+    letterSpacing: -0.6,
+  },
+  dualTitleMain: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#FAF9F6',
+    textAlign: 'center',
+    letterSpacing: -0.6,
+  },
+  subheading: {
+    fontSize: 13,
+    color: '#A1A1AA',
+    textAlign: 'center',
+    lineHeight: 19,
     marginBottom: spacing.lg,
+    paddingHorizontal: spacing.sm,
   },
   trackedAppsContainer: {
     marginBottom: spacing.md,
     alignItems: 'center',
   },
   trackedAppsTitle: {
-    ...typography.caption,
-    color: '#64748B',
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#71717A',
     marginBottom: spacing.xs,
-    textTransform: 'uppercase',
+    fontFamily: 'monospace',
+    letterSpacing: 1,
   },
   tagsRow: {
     flexDirection: 'row',
@@ -280,30 +330,34 @@ const styles = StyleSheet.create({
   appTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#13151F',
+    backgroundColor: '#0E1017',
     borderWidth: 1,
     borderRadius: radii.full,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
+    paddingVertical: 5,
     marginHorizontal: spacing.xs,
     marginVertical: 4,
   },
   tagIcon: {
-    fontSize: 14,
+    fontSize: 13,
     marginRight: 6,
   },
   tagText: {
-    ...typography.caption,
-    color: '#F8FAFC',
+    fontSize: 12,
+    color: '#FAF9F6',
     fontWeight: '700',
   },
   permissionCard: {
-    backgroundColor: '#13151F',
-    borderRadius: radii.xl,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.xxl,
     padding: spacing.xl,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: spacing.md,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
   },
   permHeader: {
     flexDirection: 'row',
@@ -311,93 +365,111 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   systemIconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 84, 0, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 84, 0, 0.25)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
   },
   systemIcon: {
-    fontSize: 24,
+    fontSize: 20,
   },
   permHeaderText: {
     flex: 1,
   },
   permTitle: {
-    ...typography.h4,
-    color: '#F8FAFC',
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#FAF9F6',
+    letterSpacing: -0.3,
   },
   permSubtitle: {
-    ...typography.caption,
-    color: colors.primaryLight,
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.two26.flame,
     marginTop: 2,
+    fontFamily: 'monospace',
   },
   permExplanation: {
-    ...typography.bodySmall,
-    color: '#94A3B8',
-    lineHeight: 20,
+    fontSize: 12,
+    color: '#A1A1AA',
+    lineHeight: 18,
     marginBottom: spacing.md,
   },
   statusBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: radii.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: 8,
     marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     marginRight: spacing.sm,
   },
   statusText: {
-    ...typography.caption,
-    color: '#E2E8F0',
-    fontWeight: '600',
+    fontSize: 10,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   settingsButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.two26.flame,
     paddingVertical: spacing.md,
-    borderRadius: radii.md,
+    borderRadius: radii.xl,
     alignItems: 'center',
-    shadowColor: colors.primary,
+    shadowColor: colors.two26.flame,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
     elevation: 3,
   },
   settingsButtonDone: {
-    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    backgroundColor: 'rgba(16, 185, 129, 0.12)',
     borderWidth: 1,
-    borderColor: colors.success,
+    borderColor: colors.two26.emerald,
+    shadowOpacity: 0,
   },
   settingsButtonText: {
-    ...typography.bodyMedium,
-    color: '#FFFFFF',
-    fontWeight: '700',
+    fontSize: 12,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    fontFamily: 'monospace',
+  },
+  settingsButtonTextDone: {
+    color: colors.two26.emerald,
   },
   securityBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: radii.md,
+    backgroundColor: '#0E1017',
+    borderRadius: radii.lg,
     padding: spacing.md,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   securityTitle: {
-    ...typography.caption,
-    color: '#F8FAFC',
-    fontWeight: '700',
+    fontSize: 10,
+    color: colors.two26.porcelain,
+    fontWeight: '800',
     marginBottom: 4,
+    fontFamily: 'monospace',
+    letterSpacing: 0.5,
   },
   securityText: {
-    ...typography.caption,
-    color: '#94A3B8',
-    lineHeight: 18,
+    fontSize: 11,
+    color: '#71717A',
+    lineHeight: 16,
   },
   navRow: {
     flexDirection: 'row',
@@ -410,22 +482,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   backButtonText: {
-    ...typography.bodyMedium,
-    color: '#94A3B8',
-    fontWeight: '600',
-  },
-  nextButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
-    borderRadius: radii.md,
-  },
-  nextButtonPending: {
-    backgroundColor: '#334155',
-  },
-  nextButtonText: {
-    ...typography.bodyMedium,
-    color: '#FFFFFF',
+    fontSize: 14,
+    color: '#71717A',
     fontWeight: '700',
   },
+  nextButton: {
+    backgroundColor: colors.two26.flame,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: radii.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: colors.two26.flame,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  nextButtonPending: {
+    backgroundColor: '#1E2330',
+    shadowOpacity: 0,
+  },
+  nextButtonText: {
+    fontSize: 14,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  buttonArrow: {
+    fontSize: 15,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    marginLeft: 6,
+  },
 });
+
