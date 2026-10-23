@@ -1,78 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:padding="6dp">
+    android:padding="4dp">
 
-    <!-- Mobile Device Outer Shell -->
-    <LinearLayout
-        android:id="@+id/ll_mobile_container"
-        android:layout_width="54dp"
-        android:layout_height="88dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="3dp"
-        android:background="#DD13151F"
-        android:elevation="8dp">
+    <!-- Circular Brain Mascot Bubble -->
+    <FrameLayout
+        android:id="@+id/fl_brain_circle"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_brain_circle"
+        android:elevation="6dp">
 
-        <!-- Phone Top Notch/Speaker -->
-        <View
-            android:layout_width="16dp"
-            android:layout_height="3dp"
-            android:layout_marginTop="2dp"
-            android:layout_gravity="center_horizontal"
-            android:background="#475569" />
+        <ImageView
+            android:id="@+id/iv_brain_mascot"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_brain_fresh"
+            android:scaleType="centerCrop"
+            android:contentDescription="Brain Mascot" />
 
-        <!-- Screen area -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="#0B0C10">
+    </FrameLayout>
 
-            <ImageView
-                android:id="@+id/iv_brain_mascot"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_gravity="center"
-                android:contentDescription="Platform Indicator" />
-
-        </FrameLayout>
-
-        <!-- Live Count Badge on Screen -->
-        <TextView
-            android:id="@+id/tv_brain_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="#F8FAFC"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:text="0" />
-
-        <!-- Home Indicator Bar -->
-        <View
-            android:layout_width="18dp"
-            android:layout_height="2dp"
-            android:layout_marginBottom="2dp"
-            android:layout_gravity="center_horizontal"
-            android:background="#64748B" />
-
-    </LinearLayout>
-
-    <!-- Floating Platform Badge in Top Right of Device -->
+    <!-- Overlapping Circular Count Badge at Bottom Center -->
     <TextView
-        android:id="@+id/tv_platform_badge"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="top|end"
+        android:id="@+id/tv_brain_count"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignBottom="@id/fl_brain_circle"
+        android:layout_marginBottom="-10dp"
+        android:background="@drawable/bg_count_badge"
+        android:elevation="8dp"
         android:gravity="center"
-        android:textSize="10sp"
-        android:textColor="#FFFFFF"
-        android:background="#E1306C"
-        android:text="0"
-        android:visibility="gone" />
+        android:textColor="#3E1F0A"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:text="0" />
 
-</FrameLayout>
+</RelativeLayout>
