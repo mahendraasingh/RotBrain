@@ -7,8 +7,7 @@ import { PlatformType } from './platform';
 export type DetectionMethod =
   | 'accessibility_event'
   | 'usage_stats'
-  | 'device_activity'
-  | 'simulated_dev';
+  | 'device_activity';
 
 export type DetectionQuality = 'confirmed' | 'estimated' | 'unsupported';
 

@@ -1,12 +1,16 @@
 /**
  * RotBrain OnboardingFlow Coordinator
- * Coordinates sequential navigation through the 6 onboarding screens.
+ * Coordinates sequential navigation through the 5 genuine onboarding screens:
+ * Step 1: Welcome
+ * Step 2: Meet Your Brain (The 4 Brain States)
+ * Step 3: Choose Platforms (Instagram & YouTube)
+ * Step 4: System Permissions (Genuine OS Permission Flow)
+ * Step 5: Ready to Begin (Setup Complete)
  */
 
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { WelcomeScreen } from './screens/WelcomeScreen';
-import { UnderstandScrollingScreen } from './screens/UnderstandScrollingScreen';
 import { MeetYourBrainScreen } from './screens/MeetYourBrainScreen';
 import { ChoosePlatformsScreen } from './screens/ChoosePlatformsScreen';
 import { EnablePermissionsScreen } from './screens/EnablePermissionsScreen';
@@ -20,7 +24,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onFinishOnboardi
   const [currentStep, setCurrentStep] = useState<number>(1);
 
   const handleNext = () => {
-    setCurrentStep((prev) => Math.min(6, prev + 1));
+    setCurrentStep((prev) => Math.min(5, prev + 1));
   };
 
   const handleBack = () => {
@@ -31,18 +35,15 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onFinishOnboardi
     <View style={styles.container}>
       {currentStep === 1 && <WelcomeScreen onNext={handleNext} />}
       {currentStep === 2 && (
-        <UnderstandScrollingScreen onNext={handleNext} onBack={handleBack} />
-      )}
-      {currentStep === 3 && (
         <MeetYourBrainScreen onNext={handleNext} onBack={handleBack} />
       )}
-      {currentStep === 4 && (
+      {currentStep === 3 && (
         <ChoosePlatformsScreen onNext={handleNext} onBack={handleBack} />
       )}
-      {currentStep === 5 && (
+      {currentStep === 4 && (
         <EnablePermissionsScreen onNext={handleNext} onBack={handleBack} />
       )}
-      {currentStep === 6 && (
+      {currentStep === 5 && (
         <ReadyToBeginScreen onComplete={onFinishOnboarding} onBack={handleBack} />
       )}
     </View>

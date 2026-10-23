@@ -26,7 +26,7 @@ export const ChoosePlatformsScreen: React.FC<ChoosePlatformsScreenProps> = ({
     <View style={styles.container}>
       {/* Step Indicator */}
       <View style={styles.stepIndicator}>
-        <Text style={styles.stepText}>STEP 4 OF 6 — TRACKED PLATFORMS</Text>
+        <Text style={styles.stepText}>STEP 3 OF 5 — TRACKED PLATFORMS</Text>
       </View>
 
       <View style={styles.content}>

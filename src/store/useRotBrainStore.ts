@@ -169,7 +169,7 @@ export const useRotBrainStore = create<RotBrainStoreState>((set, get) => ({
     });
   },
 
-  startSession: async (platform: PlatformType, detectionMethod: DetectionMethod = 'simulated_dev') => {
+  startSession: async (platform: PlatformType, detectionMethod: DetectionMethod = 'accessibility_event') => {
     await get().checkLocalDayReset();
 
     const sessionId = `session_${Date.now()}`;

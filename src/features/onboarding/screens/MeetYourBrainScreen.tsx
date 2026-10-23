@@ -29,7 +29,7 @@ export const MeetYourBrainScreen: React.FC<MeetYourBrainScreenProps> = ({
     <View style={styles.container}>
       {/* Step Indicator */}
       <View style={styles.stepIndicator}>
-        <Text style={styles.stepText}>STEP 3 OF 6 — THE 4 BRAIN STATES</Text>
+        <Text style={styles.stepText}>STEP 2 OF 5 — THE 4 BRAIN STATES</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>

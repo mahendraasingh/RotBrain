@@ -35,7 +35,7 @@ export const ReadyToBeginScreen: React.FC<ReadyToBeginScreenProps> = ({
     <View style={styles.container}>
       {/* Step Indicator */}
       <View style={styles.stepIndicator}>
-        <Text style={styles.stepText}>STEP 6 OF 6 — SETUP COMPLETE</Text>
+        <Text style={styles.stepText}>STEP 5 OF 5 — SETUP COMPLETE</Text>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
