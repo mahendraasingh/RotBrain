@@ -1,7 +1,7 @@
 /**
  * RotBrain Bottom Tab Navigator
- * Premium dark theme bottom bar with Dashboard, Analytics, and Settings tabs,
- * with FloatingMobileCounter pinned to bottom-right for automatic live tracking.
+ * Boutique Two26 Studio-inspired bottom bar with Dashboard, Analytics, and Settings tabs,
+ * and FloatingMobileCounter pinned to bottom-right for live feed tracking.
  */
 
 import React from 'react';
@@ -12,7 +12,6 @@ import { AnalyticsScreen } from '../features/analytics/AnalyticsScreen';
 import { SettingsScreen } from '../features/settings/SettingsScreen';
 import { FloatingMobileCounter } from '../features/dashboard/components/FloatingMobileCounter';
 import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
 
 const Tab = createBottomTabNavigator();
@@ -24,8 +23,8 @@ export const AppTabs: React.FC = () => {
         screenOptions={{
           headerShown: false,
           tabBarStyle: styles.tabBar,
-          tabBarActiveTintColor: colors.primary,
-          tabBarInactiveTintColor: '#64748B',
+          tabBarActiveTintColor: colors.two26.flame,
+          tabBarInactiveTintColor: '#52525B',
           tabBarLabelStyle: styles.tabLabel,
         }}
       >
@@ -33,9 +32,9 @@ export const AppTabs: React.FC = () => {
           name="Dashboard"
           component={MainDashboardScreen}
           options={{
-            tabBarLabel: 'Dashboard',
+            tabBarLabel: 'STUDIO',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
                 🧠
               </Text>
             ),
@@ -46,9 +45,9 @@ export const AppTabs: React.FC = () => {
           name="Analytics"
           component={AnalyticsScreen}
           options={{
-            tabBarLabel: 'Analytics',
+            tabBarLabel: 'TRENDS',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
                 📊
               </Text>
             ),
@@ -59,9 +58,9 @@ export const AppTabs: React.FC = () => {
           name="Settings"
           component={SettingsScreen}
           options={{
-            tabBarLabel: 'Settings',
+            tabBarLabel: 'PREFS',
             tabBarIcon: ({ color, focused }) => (
-              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.65 }]}>
+              <Text style={[styles.tabIcon, { color, opacity: focused ? 1 : 0.55 }]}>
                 ⚙️
               </Text>
             ),
@@ -78,22 +77,23 @@ export const AppTabs: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B0C10',
+    backgroundColor: '#07080B',
   },
   tabBar: {
-    backgroundColor: '#0F1017',
+    backgroundColor: '#080A0E',
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
     borderTopWidth: 1,
-    height: 64,
+    height: 66,
     paddingBottom: spacing.sm,
-    paddingTop: spacing.xs,
+    paddingTop: 6,
   },
   tabLabel: {
-    ...typography.caption,
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 9,
+    fontWeight: '800',
+    fontFamily: 'monospace',
+    letterSpacing: 0.8,
   },
   tabIcon: {
-    fontSize: 20,
+    fontSize: 18,
   },
 });

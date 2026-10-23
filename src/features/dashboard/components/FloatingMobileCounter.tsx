@@ -1,9 +1,12 @@
 /**
  * RotBrain FloatingMobileCounter
  *
- * Compact mobile phone icon positioned at the bottom right.
- * Automatically activates and counts whenever Instagram Reels or YouTube Shorts
- * start being viewed, displaying platform-specific indicators and live tally.
+ * Boutique Two26 Studio-inspired tactile mobile widget.
+ * Features:
+ * - Miniature smartphone frame with Two26 flame glow & OLED display
+ * - Automatic real-time counter detection when reels or shorts start playing
+ * - Monospace live tally display with dynamic "+1" floating pulse badge
+ * - Tactile flyout telemetry card showing platform breakdown
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -13,18 +16,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Platform,
 } from 'react-native';
 import { useRotBrainStore } from '../../../store/useRotBrainStore';
 import { colors } from '../../../theme/colors';
-import { typography } from '../../../theme/typography';
 import { radii, spacing } from '../../../theme/spacing';
 
 export const FloatingMobileCounter: React.FC = () => {
   const {
     activeSession,
     todaySummary,
-    preferences,
   } = useRotBrainStore();
 
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -36,7 +36,6 @@ export const FloatingMobileCounter: React.FC = () => {
   const isYoutubeActive = activeSession?.platform === 'youtube';
   const isAnyActive = !!activeSession;
 
-  // Track previous count to trigger auto count animation
   const prevCountRef = useRef<number>(0);
   const currentCount = isInstagramActive
     ? todaySummary.instagramConfirmedCount
@@ -46,11 +45,10 @@ export const FloatingMobileCounter: React.FC = () => {
 
   useEffect(() => {
     if (currentCount > prevCountRef.current) {
-      // Trigger count pop animation
       Animated.sequence([
         Animated.parallel([
           Animated.timing(countAnim, {
-            toValue: 1.35,
+            toValue: 1.4,
             duration: 150,
             useNativeDriver: true,
           }),
@@ -77,19 +75,19 @@ export const FloatingMobileCounter: React.FC = () => {
     prevCountRef.current = currentCount;
   }, [currentCount, countAnim, badgeAnim]);
 
-  // Continuous gentle glow pulse when actively watching
+  // Continuous Two26 flame breathing glow when actively watching
   useEffect(() => {
     if (isAnyActive) {
       const loop = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.08,
-            duration: 800,
+            duration: 900,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 800,
+            duration: 900,
             useNativeDriver: true,
           }),
         ])
@@ -105,54 +103,49 @@ export const FloatingMobileCounter: React.FC = () => {
     ? colors.platforms.instagram
     : isYoutubeActive
     ? colors.platforms.youtube
-    : colors.primary;
+    : colors.two26.flame;
 
   return (
     <View style={styles.floatingWrapper} pointerEvents="box-none">
-      {/* Expanded Details Flyout */}
+      {/* Two26 Studio Flyout Telemetry Card */}
       {expanded && (
         <View style={styles.flyoutCard}>
           <View style={styles.flyoutHeader}>
-            <Text style={styles.flyoutTitle}>Live Reel/Short Tracker</Text>
+            <View style={styles.flyoutTitleRow}>
+              <View style={[styles.flyoutDot, { backgroundColor: isAnyActive ? activeColor : '#71717A' }]} />
+              <Text style={styles.flyoutTitle}>FEED TELEMETRY</Text>
+            </View>
             <TouchableOpacity onPress={() => setExpanded(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Text style={styles.closeText}>✕</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.flyoutStatusRow}>
-            <View
-              style={[
-                styles.flyoutDot,
-                { backgroundColor: isAnyActive ? activeColor : '#64748B' },
-              ]}
-            />
-            <Text style={styles.flyoutStatusText}>
-              {isInstagramActive
-                ? 'Instagram Reels Active'
-                : isYoutubeActive
-                ? 'YouTube Shorts Active'
-                : 'Standby • Auto-detects on Feed View'}
-            </Text>
-          </View>
+          <Text style={styles.flyoutStatusText}>
+            {isInstagramActive
+              ? 'Instagram Reels • Active Feed'
+              : isYoutubeActive
+              ? 'YouTube Shorts • Active Feed'
+              : 'Standby • Auto-counts when viewing feeds'}
+          </Text>
 
           <View style={styles.flyoutDivider} />
 
           <View style={styles.breakdownRow}>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>📷 Reels</Text>
+              <Text style={styles.miniLabel}>REELS</Text>
               <Text style={[styles.miniVal, { color: colors.platforms.instagram }]}>
                 {todaySummary.instagramConfirmedCount}
               </Text>
             </View>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>▶️ Shorts</Text>
+              <Text style={styles.miniLabel}>SHORTS</Text>
               <Text style={[styles.miniVal, { color: colors.platforms.youtube }]}>
                 {todaySummary.youtubeConfirmedCount}
               </Text>
             </View>
             <View style={styles.miniCol}>
-              <Text style={styles.miniLabel}>Total</Text>
-              <Text style={[styles.miniVal, { color: '#F8FAFC' }]}>
+              <Text style={styles.miniLabel}>TOTAL</Text>
+              <Text style={[styles.miniVal, { color: '#FAF9F6' }]}>
                 {todaySummary.instagramConfirmedCount + todaySummary.youtubeConfirmedCount}
               </Text>
             </View>
@@ -160,7 +153,7 @@ export const FloatingMobileCounter: React.FC = () => {
         </View>
       )}
 
-      {/* Floating Animated Badge Popup (+1) */}
+      {/* Floating Animated Badge (+1) */}
       <Animated.View
         style={[
           styles.incrementBadge,
@@ -171,7 +164,7 @@ export const FloatingMobileCounter: React.FC = () => {
               {
                 translateY: badgeAnim.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [0, -28],
+                  outputRange: [0, -30],
                 }),
               },
             ],
@@ -191,9 +184,9 @@ export const FloatingMobileCounter: React.FC = () => {
           style={[
             styles.phoneChassis,
             {
-              borderColor: isAnyActive ? activeColor : 'rgba(255, 255, 255, 0.18)',
+              borderColor: isAnyActive ? activeColor : 'rgba(255, 255, 255, 0.16)',
               shadowColor: activeColor,
-              shadowOpacity: isAnyActive ? 0.6 : 0.2,
+              shadowOpacity: isAnyActive ? 0.7 : 0.25,
               transform: [{ scale: pulseAnim }],
             },
           ]}
@@ -208,9 +201,9 @@ export const FloatingMobileCounter: React.FC = () => {
               {
                 backgroundColor: isAnyActive
                   ? isInstagramActive
-                    ? 'rgba(225, 48, 108, 0.15)'
-                    : 'rgba(255, 0, 0, 0.15)'
-                  : '#0E1017',
+                    ? 'rgba(225, 48, 108, 0.18)'
+                    : 'rgba(255, 0, 0, 0.18)'
+                  : '#07080B',
               },
             ]}
           >
@@ -224,7 +217,7 @@ export const FloatingMobileCounter: React.FC = () => {
               style={[
                 styles.screenCountText,
                 {
-                  color: isAnyActive ? '#FFFFFF' : '#94A3B8',
+                  color: isAnyActive ? '#FAF9F6' : '#71717A',
                   transform: [{ scale: countAnim }],
                 },
               ]}
@@ -237,11 +230,11 @@ export const FloatingMobileCounter: React.FC = () => {
           <View
             style={[
               styles.phoneHomeBar,
-              { backgroundColor: isAnyActive ? activeColor : '#64748B' },
+              { backgroundColor: isAnyActive ? activeColor : '#52525B' },
             ]}
           />
 
-          {/* Notification Alert Dot when active */}
+          {/* Two26 Flame Alert Corner Dot */}
           {isAnyActive && (
             <View style={[styles.cornerDot, { backgroundColor: activeColor }]} />
           )}
@@ -254,7 +247,7 @@ export const FloatingMobileCounter: React.FC = () => {
 const styles = StyleSheet.create({
   floatingWrapper: {
     position: 'absolute',
-    bottom: 84, // Sits comfortably above bottom navigation bar
+    bottom: 82,
     right: 18,
     alignItems: 'flex-end',
     zIndex: 9999,
@@ -264,23 +257,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   phoneChassis: {
-    width: 44,
-    height: 72,
-    backgroundColor: '#13151F',
+    width: 46,
+    height: 74,
+    backgroundColor: '#0E1017',
     borderRadius: 14,
     borderWidth: 2,
     padding: 3,
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 14,
     elevation: 8,
   },
   phoneSpeaker: {
     width: 14,
     height: 3,
     borderRadius: 2,
-    backgroundColor: '#475569',
+    backgroundColor: '#52525B',
     marginTop: 1,
   },
   phoneScreen: {
@@ -298,7 +291,7 @@ const styles = StyleSheet.create({
   },
   screenCountText: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '900',
     fontFamily: 'monospace',
   },
   phoneHomeBar: {
@@ -315,7 +308,7 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     borderWidth: 1.5,
-    borderColor: '#0B0C10',
+    borderColor: '#07080B',
   },
   incrementBadge: {
     position: 'absolute',
@@ -327,22 +320,23 @@ const styles = StyleSheet.create({
     zIndex: 10000,
   },
   incrementText: {
-    color: '#FFFFFF',
+    color: '#FAF9F6',
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
   flyoutCard: {
-    backgroundColor: '#161926',
+    backgroundColor: '#0E1017',
     borderRadius: radii.lg,
     padding: spacing.md,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.12)',
-    width: 220,
+    width: 224,
     marginBottom: spacing.sm,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 16,
     elevation: 10,
   },
   flyoutHeader: {
@@ -351,31 +345,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xs,
   },
-  flyoutTitle: {
-    ...typography.caption,
-    color: '#F8FAFC',
-    fontWeight: '700',
-  },
-  closeText: {
-    color: '#64748B',
-    fontSize: 12,
-    paddingHorizontal: 4,
-  },
-  flyoutStatusRow: {
+  flyoutTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 4,
+  },
+  flyoutTitle: {
+    fontSize: 10,
+    color: '#FAF9F6',
+    fontWeight: '800',
+    letterSpacing: 0.8,
+    fontFamily: 'monospace',
+  },
+  closeText: {
+    color: '#71717A',
+    fontSize: 12,
+    paddingHorizontal: 4,
   },
   flyoutDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    marginRight: spacing.xs,
+    marginRight: 6,
   },
   flyoutStatusText: {
-    ...typography.caption,
     fontSize: 10,
-    color: '#94A3B8',
+    color: '#A1A1AA',
+    lineHeight: 14,
+    marginVertical: 2,
   },
   flyoutDivider: {
     height: 1,
@@ -391,12 +387,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   miniLabel: {
-    fontSize: 9,
-    color: '#64748B',
+    fontSize: 8,
+    color: '#71717A',
+    fontWeight: '800',
+    fontFamily: 'monospace',
     marginBottom: 2,
   },
   miniVal: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 13,
+    fontWeight: '900',
+    fontFamily: 'monospace',
   },
 });
